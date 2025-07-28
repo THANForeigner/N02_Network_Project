@@ -1,0 +1,14 @@
+[
+{
+  "directory": "D:/1_Study/Project/Network_Project/Client/build",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -ID:/1_Study/Project/Network_Project/Client/include -ID:/1_Study/Project/Network_Project/Client/lib -ID:/C++lib/curl-8.14.1/curl-8.14.1/include -isystem C:/opt/opencv/build/include -g -std=gnu++17 -o CMakeFiles\\NetworkProjectServer.dir\\main.cpp.obj -c D:\\1_Study\\Project\\Network_Project\\Client\\main.cpp",
+  "file": "D:\\1_Study\\Project\\Network_Project\\Client\\main.cpp",
+  "output": "CMakeFiles\\NetworkProjectServer.dir\\main.cpp.obj"
+},
+{
+  "directory": "D:/1_Study/Project/Network_Project/Client/build",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -ID:/1_Study/Project/Network_Project/Client/include -ID:/1_Study/Project/Network_Project/Client/lib -ID:/C++lib/curl-8.14.1/curl-8.14.1/include -isystem C:/opt/opencv/build/include -g -std=gnu++17 -o CMakeFiles\\NetworkProjectServer.dir\\src\\gmail.cpp.obj -c D:\\1_Study\\Project\\Network_Project\\Client\\src\\gmail.cpp",
+  "file": "D:\\1_Study\\Project\\Network_Project\\Client\\src\\gmail.cpp",
+  "output": "CMakeFiles\\NetworkProjectServer.dir\\src\\gmail.cpp.obj"
+}
+]

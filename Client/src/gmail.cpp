@@ -326,6 +326,7 @@ bool read_latest_email(const std::string &bearer_token) {
             << body << "\n";
   return true;
 }
+/*
 // ─────────────────────────── Main program ────────────────────────────
 int main() {
   curl_global_init(CURL_GLOBAL_DEFAULT);
@@ -417,3 +418,4 @@ int main() {
   if (!read_latest_email(tok.access_token))
     std::cerr << "Không đọc được email mới nhất\n";
 }
+*/
