@@ -113,7 +113,7 @@ CMAKE_FIND_PACKAGE_REDIRECTS_DIR:STATIC=D:/1_Study/Project/Network_Project/Serve
 CMAKE_GNUtoMS:BOOL=OFF
 
 //Install path prefix, prepended onto install directories.
-CMAKE_INSTALL_PREFIX:PATH=C:/Program Files (x86)/NetworkProject
+CMAKE_INSTALL_PREFIX:PATH=C:/Program Files (x86)/NetworkProjectServer
 
 //Path to a program.
 CMAKE_LINKER:FILEPATH=C:/msys64/mingw64/bin/ld.exe
@@ -250,15 +250,6 @@ NetworkProjectServer_IS_TOP_LEVEL:STATIC=ON
 
 //Value Computed by CMake
 NetworkProjectServer_SOURCE_DIR:STATIC=D:/1_Study/Project/Network_Project/Server
-
-//Value Computed by CMake
-NetworkProject_BINARY_DIR:STATIC=D:/1_Study/Project/Network_Project/Server/build
-
-//Value Computed by CMake
-NetworkProject_IS_TOP_LEVEL:STATIC=ON
-
-//Value Computed by CMake
-NetworkProject_SOURCE_DIR:STATIC=D:/1_Study/Project/Network_Project/Server
 
 
 ########################
@@ -426,5 +417,5 @@ CMAKE_TAPI-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
 //Details about finding OpenCV
-FIND_PACKAGE_MESSAGE_DETAILS_OpenCV:INTERNAL=[C:/opt/opencv/build][v4.12.0()]
+FIND_PACKAGE_MESSAGE_DETAILS_OpenCV:INTERNAL=[D:/1_Study/Project/Network_Project/Server/opencv/install][v4.13.0()]
 
