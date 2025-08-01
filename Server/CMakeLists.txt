@@ -9,7 +9,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 
 # === OpenCV (local folder) ===
 # This path is correct based on your screenshot.
-set(OpenCV_DIR ${PROJECT_SOURCE_DIR}/opencv/install)
+set(OpenCV_DIR ${PROJECT_SOURCE_DIR}/lib/opencv/install)
 
 # This command will now succeed because you will have chosen
 # a generator (MinGW or VS 2019) that matches a library folder.
@@ -19,8 +19,8 @@ message(STATUS "Found OpenCV ${OpenCV_VERSION} using C++ compiler: ${CMAKE_CXX_C
 include_directories(${OpenCV_INCLUDE_DIRS})
 
 # === libcurl (manual setup) ===
-set(CURL_INCLUDE_DIR "D:/C++lib/curl-8.14.1/curl-8.14.1/include")
-set(CURL_LIBRARY "D:/C++lib/curl-8.14.1/curl-8.14.1/lib/libcurl.dll.a")
+set(CURL_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/lib/curl-8.14.1/curl-8.14.1/include)
+set(CURL_LIBRARY ${PROJECT_SOURCE_DIR}/lib/curl-8.14.1/lib/libcurl.dll.a)
 include_directories(${CURL_INCLUDE_DIR})
 
 # === Sources ===
@@ -44,9 +44,9 @@ target_link_libraries(${PROJECT_NAME}
 # CMake will handle this logic for you.
 
 if(MSVC)
-    set(OPENCV_DLL_DIR ${PROJECT_SOURCE_DIR}/opencv/build/x64/vc16/bin)
+    set(OPENCV_DLL_DIR ${PROJECT_SOURCE_DIR}/lib/opencv/build/x64/vc16/bin)
 else() # Assumes MinGW/GCC
-    set(OPENCV_DLL_DIR ${PROJECT_SOURCE_DIR}/opencv/build/x64/mingw/bin)
+    set(OPENCV_DLL_DIR ${PROJECT_SOURCE_DIR}/lib/opencv/build/x64/mingw/bin)
 endif()
 
 # Find all DLLs in the chosen directory

