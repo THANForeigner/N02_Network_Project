@@ -57,6 +57,14 @@ build CMakeFiles/NetworkProjectServer.dir/main.cpp.obj: CXX_COMPILER__NetworkPro
   OBJECT_DIR = CMakeFiles\NetworkProjectServer.dir
   OBJECT_FILE_DIR = CMakeFiles\NetworkProjectServer.dir
 
+build CMakeFiles/NetworkProjectServer.dir/src/client.cpp.obj: CXX_COMPILER__NetworkProjectServer_unscanned_Debug D$:/1_Study/Project/Network_Project/Client/src/client.cpp || cmake_object_order_depends_target_NetworkProjectServer
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles\NetworkProjectServer.dir\src\client.cpp.obj.d
+  FLAGS = -g -std=gnu++17
+  INCLUDES = -ID:/1_Study/Project/Network_Project/Client/include -ID:/1_Study/Project/Network_Project/Client/lib -ID:/C++lib/curl-8.14.1/curl-8.14.1/include
+  OBJECT_DIR = CMakeFiles\NetworkProjectServer.dir
+  OBJECT_FILE_DIR = CMakeFiles\NetworkProjectServer.dir\src
+
 build CMakeFiles/NetworkProjectServer.dir/src/gmail.cpp.obj: CXX_COMPILER__NetworkProjectServer_unscanned_Debug D$:/1_Study/Project/Network_Project/Client/src/gmail.cpp || cmake_object_order_depends_target_NetworkProjectServer
   CONFIG = Debug
   DEP_FILE = CMakeFiles\NetworkProjectServer.dir\src\gmail.cpp.obj.d
@@ -73,7 +81,7 @@ build CMakeFiles/NetworkProjectServer.dir/src/gmail.cpp.obj: CXX_COMPILER__Netwo
 #############################################
 # Link the executable NetworkProjectServer.exe
 
-build NetworkProjectServer.exe: CXX_EXECUTABLE_LINKER__NetworkProjectServer_Debug CMakeFiles/NetworkProjectServer.dir/main.cpp.obj CMakeFiles/NetworkProjectServer.dir/src/gmail.cpp.obj | D$:/C++lib/curl-8.14.1/curl-8.14.1/lib/libcurl.dll.a
+build NetworkProjectServer.exe: CXX_EXECUTABLE_LINKER__NetworkProjectServer_Debug CMakeFiles/NetworkProjectServer.dir/main.cpp.obj CMakeFiles/NetworkProjectServer.dir/src/client.cpp.obj CMakeFiles/NetworkProjectServer.dir/src/gmail.cpp.obj | D$:/C++lib/curl-8.14.1/curl-8.14.1/lib/libcurl.dll.a
   CONFIG = Debug
   FLAGS = -g
   LINK_LIBRARIES = D:/C++lib/curl-8.14.1/curl-8.14.1/lib/libcurl.dll.a  -lPowrProf  -lws2_32  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32

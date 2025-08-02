@@ -1,17 +1,10 @@
 # ninja log v7
-65	5608	7757202645800700	CMakeFiles/NetworkProjectServer.dir/main.cpp.obj	3ce0eadf9babebbd
-84	3315	7757202646116428	CMakeFiles/NetworkProjectServer.dir/src/copyfile.cpp.obj	4fd277bef08ec024
-78	6315	7757202646075681	CMakeFiles/NetworkProjectServer.dir/src/command_handler.cpp.obj	8177c449fe74632d
-72	6346	7757202645957696	CMakeFiles/NetworkProjectServer.dir/src/PowerRelatedFunction.cpp.obj	91f8b14470467205
-95	6545	7757202646214485	CMakeFiles/NetworkProjectServer.dir/src/process_manager.cpp.obj	6f78c3ef135fc0fb
-89	6555	7757202646116428	CMakeFiles/NetworkProjectServer.dir/src/keylogger.cpp.obj	d5380beee5625739
-23	2357	7757202993276090	NetworkProjectServer.exe	792b88ee08dcbe5a
-41	1028	7757203781207874	CMakeFiles/NetworkProjectServer.dir/src/copyfile.cpp.obj	20c8e7d7111b134
 20	2117	7757203781019910	CMakeFiles/NetworkProjectServer.dir/main.cpp.obj	354a51323f95a052
+41	1028	7757203781207874	CMakeFiles/NetworkProjectServer.dir/src/copyfile.cpp.obj	20c8e7d7111b134
 33	2482	7757203781019910	CMakeFiles/NetworkProjectServer.dir/src/command_handler.cpp.obj	206ec23c37fe7d6e
 26	2489	7757203781019910	CMakeFiles/NetworkProjectServer.dir/src/PowerRelatedFunction.cpp.obj	77b0ca258957a69f
 56	2554	7757203781388035	CMakeFiles/NetworkProjectServer.dir/src/process_manager.cpp.obj	5f817521ab8657a9
-49	2675	7757203781317723	CMakeFiles/NetworkProjectServer.dir/src/keylogger.cpp.obj	49c17e427193b6f0
-2676	3009	7757203807474025	NetworkProjectServer.exe	43024320efa5d6da
 38	2743	7757209521220284	CMakeFiles/NetworkProjectServer.dir/src/keylogger.cpp.obj	49c17e427193b6f0
 2743	3125	7757209548274664	NetworkProjectServer.exe	43024320efa5d6da
+16	1302	7758545940233693	CMakeFiles/NetworkProjectServer.dir/main.cpp.obj	354a51323f95a052
+1302	2941	7758545953147892	NetworkProjectServer.exe	43024320efa5d6da

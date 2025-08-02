@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # === Project Include ===
 include_directories(
     ${PROJECT_SOURCE_DIR}/include
-    ${PROJECT_SOURCE_DIR}/lib    # For json.hh
+    ${PROJECT_SOURCE_DIR}/lib
 )
 
 # === libcurl (manual setup) ===

@@ -1,9 +1,14 @@
 # ninja log v7
 2	482	7753778018059303	CMakeFiles/NetworkProjectClient.dir/main.cpp.obj	fde8ec1f7e244b09
 9	7524	7753778018125492	CMakeFiles/NetworkProjectClient.dir/src/gmail.cpp.obj	fc2febf90c44e4a4
-5	897	7753964973963614	CMakeFiles/NetworkProjectServer.dir/main.cpp.obj	eeed7e3e372472e7
-21	3882	7753809089070893	CMakeFiles/NetworkProjectServer.dir/src/gmail.cpp.obj	b9aaaaa6e721afd
-3882	4079	7753809127643461	NetworkProjectServer.exe	c7a81559de589de3
-13	925	7753966289219748	CMakeFiles/NetworkProjectServer.dir/main.cpp.obj	3c6628fdb92b0c21
-17	4381	7753966289249394	CMakeFiles/NetworkProjectServer.dir/src/gmail.cpp.obj	1e8df25b261bbb67
+20	4067	7758527895753535	CMakeFiles/NetworkProjectServer.dir/main.cpp.obj	1a04f72e67e46aa0
+29	4260	7758527895860527	CMakeFiles/NetworkProjectServer.dir/src/gmail.cpp.obj	18939d490b815420
 4381	4545	7753966332908582	NetworkProjectServer.exe	e48ba2cc9a45979f
+24	4105	7758527895753535	CMakeFiles/NetworkProjectServer.dir/src/client.cpp.obj	cade43581baa6db9
+19	3948	7758528029991907	CMakeFiles/NetworkProjectServer.dir/src/gmail.cpp.obj	1e8df25b261bbb67
+19	2068	7758528120522125	CMakeFiles/NetworkProjectServer.dir/main.cpp.obj	3c6628fdb92b0c21
+24	2082	7758528120613708	CMakeFiles/NetworkProjectServer.dir/src/client.cpp.obj	1d0f65f4456fd896
+2082	2250	7758528141192516	NetworkProjectServer.exe	c5ddee8f18655fe6
+19	1731	7758534832160312	CMakeFiles/NetworkProjectServer.dir/main.cpp.obj	3c6628fdb92b0c21
+23	1762	7758534832160312	CMakeFiles/NetworkProjectServer.dir/src/client.cpp.obj	1d0f65f4456fd896
+1762	1939	7758534849542524	NetworkProjectServer.exe	c5ddee8f18655fe6
