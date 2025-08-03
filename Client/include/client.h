@@ -26,13 +26,13 @@ public:
         SHUTDOWN
     };
 */
+    Client(){};
     std::string port;
     std::string serverHost;
     WSADATA wsaData;
     SOCKET connSock = INVALID_SOCKET;
     struct addrinfo hints{}, *res = nullptr;
 
-    GmailClient gmail;
     std::string command;
 
     const char *PORT = "27015";
@@ -40,6 +40,7 @@ public:
 
     void Init(std::string hostIP, std::string port);
     void GetCommand();
-    void ProcessCommand();
+    void SendCommand();
+    void ReceiveFile(std::string pathFolder);
     void Shutdown();
 };

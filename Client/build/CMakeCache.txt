@@ -157,7 +157,7 @@ CMAKE_PROJECT_DESCRIPTION:STATIC=
 CMAKE_PROJECT_HOMEPAGE_URL:STATIC=
 
 //Value Computed by CMake
-CMAKE_PROJECT_NAME:STATIC=NetworkProjectServer
+CMAKE_PROJECT_NAME:STATIC=NetworkProjectClient
 
 //Path to a program.
 CMAKE_RANLIB:FILEPATH=C:/msys64/mingw64/bin/ranlib.exe
@@ -250,15 +250,6 @@ NetworkProjectClient_IS_TOP_LEVEL:STATIC=ON
 
 //Value Computed by CMake
 NetworkProjectClient_SOURCE_DIR:STATIC=D:/1_Study/Project/Network_Project/Client
-
-//Value Computed by CMake
-NetworkProjectServer_BINARY_DIR:STATIC=D:/1_Study/Project/Network_Project/Client/build
-
-//Value Computed by CMake
-NetworkProjectServer_IS_TOP_LEVEL:STATIC=ON
-
-//Value Computed by CMake
-NetworkProjectServer_SOURCE_DIR:STATIC=D:/1_Study/Project/Network_Project/Client
 
 
 ########################
@@ -425,6 +416,4 @@ CMAKE_STRIP-ADVANCED:INTERNAL=1
 CMAKE_TAPI-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
-//Details about finding OpenCV
-FIND_PACKAGE_MESSAGE_DETAILS_OpenCV:INTERNAL=[C:/opt/opencv/build][v4.12.0()]
 

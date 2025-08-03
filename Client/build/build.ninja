@@ -11,7 +11,7 @@
 # =============================================================================
 
 # =============================================================================
-# Project: NetworkProjectServer
+# Project: NetworkProjectClient
 # Configurations: Debug
 # =============================================================================
 
@@ -41,56 +41,56 @@ include CMakeFiles/rules.ninja
 
 cmake_ninja_workdir = D$:/1_Study/Project/Network_Project/Client/build/
 # =============================================================================
-# Object build statements for EXECUTABLE target NetworkProjectServer
+# Object build statements for EXECUTABLE target NetworkProjectClient
 
 
 #############################################
-# Order-only phony target for NetworkProjectServer
+# Order-only phony target for NetworkProjectClient
 
-build cmake_object_order_depends_target_NetworkProjectServer: phony || .
+build cmake_object_order_depends_target_NetworkProjectClient: phony || .
 
-build CMakeFiles/NetworkProjectServer.dir/main.cpp.obj: CXX_COMPILER__NetworkProjectServer_unscanned_Debug D$:/1_Study/Project/Network_Project/Client/main.cpp || cmake_object_order_depends_target_NetworkProjectServer
+build CMakeFiles/NetworkProjectClient.dir/main.cpp.obj: CXX_COMPILER__NetworkProjectClient_unscanned_Debug D$:/1_Study/Project/Network_Project/Client/main.cpp || cmake_object_order_depends_target_NetworkProjectClient
   CONFIG = Debug
-  DEP_FILE = CMakeFiles\NetworkProjectServer.dir\main.cpp.obj.d
+  DEP_FILE = CMakeFiles\NetworkProjectClient.dir\main.cpp.obj.d
   FLAGS = -g -std=gnu++17
-  INCLUDES = -ID:/1_Study/Project/Network_Project/Client/include -ID:/1_Study/Project/Network_Project/Client/lib -ID:/C++lib/curl-8.14.1/curl-8.14.1/include
-  OBJECT_DIR = CMakeFiles\NetworkProjectServer.dir
-  OBJECT_FILE_DIR = CMakeFiles\NetworkProjectServer.dir
+  INCLUDES = -ID:/1_Study/Project/Network_Project/Client/include -ID:/1_Study/Project/Network_Project/Client/lib -ID:/1_Study/Project/Network_Project/Client/lib/curl-8.14.1/include
+  OBJECT_DIR = CMakeFiles\NetworkProjectClient.dir
+  OBJECT_FILE_DIR = CMakeFiles\NetworkProjectClient.dir
 
-build CMakeFiles/NetworkProjectServer.dir/src/client.cpp.obj: CXX_COMPILER__NetworkProjectServer_unscanned_Debug D$:/1_Study/Project/Network_Project/Client/src/client.cpp || cmake_object_order_depends_target_NetworkProjectServer
+build CMakeFiles/NetworkProjectClient.dir/src/client.cpp.obj: CXX_COMPILER__NetworkProjectClient_unscanned_Debug D$:/1_Study/Project/Network_Project/Client/src/client.cpp || cmake_object_order_depends_target_NetworkProjectClient
   CONFIG = Debug
-  DEP_FILE = CMakeFiles\NetworkProjectServer.dir\src\client.cpp.obj.d
+  DEP_FILE = CMakeFiles\NetworkProjectClient.dir\src\client.cpp.obj.d
   FLAGS = -g -std=gnu++17
-  INCLUDES = -ID:/1_Study/Project/Network_Project/Client/include -ID:/1_Study/Project/Network_Project/Client/lib -ID:/C++lib/curl-8.14.1/curl-8.14.1/include
-  OBJECT_DIR = CMakeFiles\NetworkProjectServer.dir
-  OBJECT_FILE_DIR = CMakeFiles\NetworkProjectServer.dir\src
+  INCLUDES = -ID:/1_Study/Project/Network_Project/Client/include -ID:/1_Study/Project/Network_Project/Client/lib -ID:/1_Study/Project/Network_Project/Client/lib/curl-8.14.1/include
+  OBJECT_DIR = CMakeFiles\NetworkProjectClient.dir
+  OBJECT_FILE_DIR = CMakeFiles\NetworkProjectClient.dir\src
 
-build CMakeFiles/NetworkProjectServer.dir/src/gmail.cpp.obj: CXX_COMPILER__NetworkProjectServer_unscanned_Debug D$:/1_Study/Project/Network_Project/Client/src/gmail.cpp || cmake_object_order_depends_target_NetworkProjectServer
+build CMakeFiles/NetworkProjectClient.dir/src/gmail.cpp.obj: CXX_COMPILER__NetworkProjectClient_unscanned_Debug D$:/1_Study/Project/Network_Project/Client/src/gmail.cpp || cmake_object_order_depends_target_NetworkProjectClient
   CONFIG = Debug
-  DEP_FILE = CMakeFiles\NetworkProjectServer.dir\src\gmail.cpp.obj.d
+  DEP_FILE = CMakeFiles\NetworkProjectClient.dir\src\gmail.cpp.obj.d
   FLAGS = -g -std=gnu++17
-  INCLUDES = -ID:/1_Study/Project/Network_Project/Client/include -ID:/1_Study/Project/Network_Project/Client/lib -ID:/C++lib/curl-8.14.1/curl-8.14.1/include
-  OBJECT_DIR = CMakeFiles\NetworkProjectServer.dir
-  OBJECT_FILE_DIR = CMakeFiles\NetworkProjectServer.dir\src
+  INCLUDES = -ID:/1_Study/Project/Network_Project/Client/include -ID:/1_Study/Project/Network_Project/Client/lib -ID:/1_Study/Project/Network_Project/Client/lib/curl-8.14.1/include
+  OBJECT_DIR = CMakeFiles\NetworkProjectClient.dir
+  OBJECT_FILE_DIR = CMakeFiles\NetworkProjectClient.dir\src
 
 
 # =============================================================================
-# Link build statements for EXECUTABLE target NetworkProjectServer
+# Link build statements for EXECUTABLE target NetworkProjectClient
 
 
 #############################################
-# Link the executable NetworkProjectServer.exe
+# Link the executable NetworkProjectClient.exe
 
-build NetworkProjectServer.exe: CXX_EXECUTABLE_LINKER__NetworkProjectServer_Debug CMakeFiles/NetworkProjectServer.dir/main.cpp.obj CMakeFiles/NetworkProjectServer.dir/src/client.cpp.obj CMakeFiles/NetworkProjectServer.dir/src/gmail.cpp.obj | D$:/C++lib/curl-8.14.1/curl-8.14.1/lib/libcurl.dll.a
+build NetworkProjectClient.exe: CXX_EXECUTABLE_LINKER__NetworkProjectClient_Debug CMakeFiles/NetworkProjectClient.dir/main.cpp.obj CMakeFiles/NetworkProjectClient.dir/src/client.cpp.obj CMakeFiles/NetworkProjectClient.dir/src/gmail.cpp.obj | D$:/1_Study/Project/Network_Project/Client/lib/curl-8.14.1/lib/libcurl.dll.a
   CONFIG = Debug
   FLAGS = -g
-  LINK_LIBRARIES = D:/C++lib/curl-8.14.1/curl-8.14.1/lib/libcurl.dll.a  -lPowrProf  -lws2_32  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
-  OBJECT_DIR = CMakeFiles\NetworkProjectServer.dir
-  POST_BUILD = cd .
+  LINK_LIBRARIES = D:/1_Study/Project/Network_Project/Client/lib/curl-8.14.1/lib/libcurl.dll.a  -lPowrProf  -lws2_32  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
+  OBJECT_DIR = CMakeFiles\NetworkProjectClient.dir
+  POST_BUILD = C:\WINDOWS\system32\cmd.exe /C "cd /D D:\1_Study\Project\Network_Project\Client\build && "C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different D:/1_Study/Project/Network_Project/Client/lib/curl-8.14.1/bin/libcurl-x64.dll D:/1_Study/Project/Network_Project/Client/build"
   PRE_LINK = cd .
-  TARGET_FILE = NetworkProjectServer.exe
-  TARGET_IMPLIB = libNetworkProjectServer.dll.a
-  TARGET_PDB = NetworkProjectServer.exe.dbg
+  TARGET_FILE = NetworkProjectClient.exe
+  TARGET_IMPLIB = libNetworkProjectClient.dll.a
+  TARGET_PDB = NetworkProjectClient.exe.dbg
 
 
 #############################################
@@ -119,7 +119,7 @@ build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 # =============================================================================
 # Target aliases.
 
-build NetworkProjectServer: phony NetworkProjectServer.exe
+build NetworkProjectClient: phony NetworkProjectClient.exe
 
 # =============================================================================
 # Folder targets.
@@ -129,7 +129,7 @@ build NetworkProjectServer: phony NetworkProjectServer.exe
 #############################################
 # Folder: D:/1_Study/Project/Network_Project/Client/build
 
-build all: phony NetworkProjectServer.exe
+build all: phony NetworkProjectClient.exe
 
 # =============================================================================
 # Built-in targets

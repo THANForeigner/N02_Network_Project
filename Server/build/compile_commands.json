@@ -1,38 +1,50 @@
 [
 {
   "directory": "D:/1_Study/Project/Network_Project/Server/build",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -ID:/1_Study/Project/Network_Project/Server/include -ID:/1_Study/Project/Network_Project/Server/lib/curl-8.14.1/curl-8.14.1/include -isystem D:/1_Study/Project/Network_Project/Server/lib/opencv/install/include -g -std=gnu++17 -o CMakeFiles\\NetworkProjectServer.dir\\main.cpp.obj -c D:\\1_Study\\Project\\Network_Project\\Server\\main.cpp",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -ID:/1_Study/Project/Network_Project/Server/include -isystem D:/1_Study/Project/Network_Project/Server/lib/opencv/install/include -g -std=gnu++17 -o CMakeFiles\\NetworkProjectServer.dir\\main.cpp.obj -c D:\\1_Study\\Project\\Network_Project\\Server\\main.cpp",
   "file": "D:\\1_Study\\Project\\Network_Project\\Server\\main.cpp",
   "output": "CMakeFiles\\NetworkProjectServer.dir\\main.cpp.obj"
 },
 {
   "directory": "D:/1_Study/Project/Network_Project/Server/build",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -ID:/1_Study/Project/Network_Project/Server/include -ID:/1_Study/Project/Network_Project/Server/lib/curl-8.14.1/curl-8.14.1/include -isystem D:/1_Study/Project/Network_Project/Server/lib/opencv/install/include -g -std=gnu++17 -o CMakeFiles\\NetworkProjectServer.dir\\src\\PowerRelatedFunction.cpp.obj -c D:\\1_Study\\Project\\Network_Project\\Server\\src\\PowerRelatedFunction.cpp",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -ID:/1_Study/Project/Network_Project/Server/include -isystem D:/1_Study/Project/Network_Project/Server/lib/opencv/install/include -g -std=gnu++17 -o CMakeFiles\\NetworkProjectServer.dir\\src\\PowerRelatedFunction.cpp.obj -c D:\\1_Study\\Project\\Network_Project\\Server\\src\\PowerRelatedFunction.cpp",
   "file": "D:\\1_Study\\Project\\Network_Project\\Server\\src\\PowerRelatedFunction.cpp",
   "output": "CMakeFiles\\NetworkProjectServer.dir\\src\\PowerRelatedFunction.cpp.obj"
 },
 {
   "directory": "D:/1_Study/Project/Network_Project/Server/build",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -ID:/1_Study/Project/Network_Project/Server/include -ID:/1_Study/Project/Network_Project/Server/lib/curl-8.14.1/curl-8.14.1/include -isystem D:/1_Study/Project/Network_Project/Server/lib/opencv/install/include -g -std=gnu++17 -o CMakeFiles\\NetworkProjectServer.dir\\src\\command_handler.cpp.obj -c D:\\1_Study\\Project\\Network_Project\\Server\\src\\command_handler.cpp",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -ID:/1_Study/Project/Network_Project/Server/include -isystem D:/1_Study/Project/Network_Project/Server/lib/opencv/install/include -g -std=gnu++17 -o CMakeFiles\\NetworkProjectServer.dir\\src\\WebcamRecorder.cpp.obj -c D:\\1_Study\\Project\\Network_Project\\Server\\src\\WebcamRecorder.cpp",
+  "file": "D:\\1_Study\\Project\\Network_Project\\Server\\src\\WebcamRecorder.cpp",
+  "output": "CMakeFiles\\NetworkProjectServer.dir\\src\\WebcamRecorder.cpp.obj"
+},
+{
+  "directory": "D:/1_Study/Project/Network_Project/Server/build",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -ID:/1_Study/Project/Network_Project/Server/include -isystem D:/1_Study/Project/Network_Project/Server/lib/opencv/install/include -g -std=gnu++17 -o CMakeFiles\\NetworkProjectServer.dir\\src\\command_handler.cpp.obj -c D:\\1_Study\\Project\\Network_Project\\Server\\src\\command_handler.cpp",
   "file": "D:\\1_Study\\Project\\Network_Project\\Server\\src\\command_handler.cpp",
   "output": "CMakeFiles\\NetworkProjectServer.dir\\src\\command_handler.cpp.obj"
 },
 {
   "directory": "D:/1_Study/Project/Network_Project/Server/build",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -ID:/1_Study/Project/Network_Project/Server/include -ID:/1_Study/Project/Network_Project/Server/lib/curl-8.14.1/curl-8.14.1/include -isystem D:/1_Study/Project/Network_Project/Server/lib/opencv/install/include -g -std=gnu++17 -o CMakeFiles\\NetworkProjectServer.dir\\src\\copyfile.cpp.obj -c D:\\1_Study\\Project\\Network_Project\\Server\\src\\copyfile.cpp",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -ID:/1_Study/Project/Network_Project/Server/include -isystem D:/1_Study/Project/Network_Project/Server/lib/opencv/install/include -g -std=gnu++17 -o CMakeFiles\\NetworkProjectServer.dir\\src\\copyfile.cpp.obj -c D:\\1_Study\\Project\\Network_Project\\Server\\src\\copyfile.cpp",
   "file": "D:\\1_Study\\Project\\Network_Project\\Server\\src\\copyfile.cpp",
   "output": "CMakeFiles\\NetworkProjectServer.dir\\src\\copyfile.cpp.obj"
 },
 {
   "directory": "D:/1_Study/Project/Network_Project/Server/build",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -ID:/1_Study/Project/Network_Project/Server/include -ID:/1_Study/Project/Network_Project/Server/lib/curl-8.14.1/curl-8.14.1/include -isystem D:/1_Study/Project/Network_Project/Server/lib/opencv/install/include -g -std=gnu++17 -o CMakeFiles\\NetworkProjectServer.dir\\src\\keylogger.cpp.obj -c D:\\1_Study\\Project\\Network_Project\\Server\\src\\keylogger.cpp",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -ID:/1_Study/Project/Network_Project/Server/include -isystem D:/1_Study/Project/Network_Project/Server/lib/opencv/install/include -g -std=gnu++17 -o CMakeFiles\\NetworkProjectServer.dir\\src\\keylogger.cpp.obj -c D:\\1_Study\\Project\\Network_Project\\Server\\src\\keylogger.cpp",
   "file": "D:\\1_Study\\Project\\Network_Project\\Server\\src\\keylogger.cpp",
   "output": "CMakeFiles\\NetworkProjectServer.dir\\src\\keylogger.cpp.obj"
 },
 {
   "directory": "D:/1_Study/Project/Network_Project/Server/build",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -ID:/1_Study/Project/Network_Project/Server/include -ID:/1_Study/Project/Network_Project/Server/lib/curl-8.14.1/curl-8.14.1/include -isystem D:/1_Study/Project/Network_Project/Server/lib/opencv/install/include -g -std=gnu++17 -o CMakeFiles\\NetworkProjectServer.dir\\src\\process_manager.cpp.obj -c D:\\1_Study\\Project\\Network_Project\\Server\\src\\process_manager.cpp",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -ID:/1_Study/Project/Network_Project/Server/include -isystem D:/1_Study/Project/Network_Project/Server/lib/opencv/install/include -g -std=gnu++17 -o CMakeFiles\\NetworkProjectServer.dir\\src\\process_manager.cpp.obj -c D:\\1_Study\\Project\\Network_Project\\Server\\src\\process_manager.cpp",
   "file": "D:\\1_Study\\Project\\Network_Project\\Server\\src\\process_manager.cpp",
   "output": "CMakeFiles\\NetworkProjectServer.dir\\src\\process_manager.cpp.obj"
+},
+{
+  "directory": "D:/1_Study/Project/Network_Project/Server/build",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -ID:/1_Study/Project/Network_Project/Server/include -isystem D:/1_Study/Project/Network_Project/Server/lib/opencv/install/include -g -std=gnu++17 -o CMakeFiles\\NetworkProjectServer.dir\\src\\server.cpp.obj -c D:\\1_Study\\Project\\Network_Project\\Server\\src\\server.cpp",
+  "file": "D:\\1_Study\\Project\\Network_Project\\Server\\src\\server.cpp",
+  "output": "CMakeFiles\\NetworkProjectServer.dir\\src\\server.cpp.obj"
 }
 ]

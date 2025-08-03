@@ -1,55 +1,33 @@
 #include "copyfile.h"
+#include <filesystem>
+#include <iostream>
+const std::filesystem::path DESTINATION_DIR = "../data/copyfile";
 
-std::string CreateFile(std::string name, std::string path)
+void CopyToPath(std::string baseFile)
 {
-    std::string newFile=path+"/"+name;
-    return newFile;
-}
-FileName GetFileName(std::string file)
-{
-    unsigned int i;
-    for(i=0;i<file.size();i++)
+    std::filesystem::path sourcePath(baseFile);
+    std::filesystem::path filename = sourcePath.filename();
+    if (filename.empty())
     {
-        if(file[i]=='.')
-        {
-            break;
-        }
+        std::cout<<"Invalid source file path provided.";
+        exit(1);
     }
-    FileName newFile;
-    newFile.tail=file.substr(i);
-    newFile.name=file.substr(0,i);
-    return newFile;
-}
-void CopyToPath(std::string baseFile, std::string DesPath)
-{
-    int fileInPath;
-    for(int i=(int)baseFile.size()-1;i>0;i--)
+    std::filesystem::path destinationPath = DESTINATION_DIR / filename;
+    if (!std::filesystem::exists(sourcePath))
     {
-        fileInPath=i;
-        if(baseFile[i]=='/')break;
+        std::cout<<"Source file does not exist: " << sourcePath.string();
+        exit(1);
     }
-    std::string file=baseFile.substr(fileInPath+1);
-    FileName Name=GetFileName(file);
-    std::string newFile=CreateFile(Name.name+Name.tail,DesPath);
-    if(newFile==baseFile)
+    if (!std::filesystem::is_regular_file(sourcePath))
     {
-        Name.name=Name.name+"_copy";
-        newFile=CreateFile(Name.name+Name.tail,DesPath);
+        std::cout<<"Source is not a regular file: " << sourcePath.string();
+        exit(1);
     }
-    std::ifstream in(baseFile, std::ios::binary);
-    std::ofstream out(newFile, std::ios::binary);
-    out<<in.rdbuf();
-}
-void CopyToPathRename(std::string baseFile, std::string DesPath, std::string newName)
-{
-    std::string newFile=CreateFile(newName,DesPath);
-    if(newFile==baseFile)
+    std::filesystem::create_directories(DESTINATION_DIR);
+    if (std::filesystem::exists(destinationPath))
     {
-        newName=newName+"_copy";
-        newFile=CreateFile(newName,DesPath);
+        std::string new_name = destinationPath.stem().string() + "_copy" + destinationPath.extension().string();
+        destinationPath.replace_filename(new_name);
     }
-    std::ifstream in(baseFile, std::ios::binary);
-    std::ofstream out(newFile, std::ios::binary);
-    out<<in.rdbuf();
+    std::filesystem::copy_file(sourcePath, destinationPath);
 }
-
