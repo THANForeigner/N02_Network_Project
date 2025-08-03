@@ -31,6 +31,7 @@ bool startRecording(std::string &path) {
     ensureRecordFolder();
     std::string filename = (getRecordFolderPath() / (getCurrentTimestamp("%Y%m%d_%H%M%S") + ".avi")).string();
     path="../data/video/"+filename+".avi";
+
     recording = true;
 
     recordThread = std::thread([filename]() {
