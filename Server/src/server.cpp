@@ -86,17 +86,10 @@ void Server::ProcessCommand()
     ss >> com >> body;
     if (com == "COPYFILE")
     {
-        size_t last_slash_idx = body.find_last_of('/');
-        std::string path;
-        if (std::string::npos != last_slash_idx)
-        {
-            path = body.substr(last_slash_idx + 1);
-        }
-        else
-        {
-            path = body;
-        }
-        CopyToPath(path);
+        std::string destPath=CopyToPath(body);
+        SendResult(destPath);
+        DeleteFilePath(body);
+        DeleteFilePath(destPath);
     }
     else if (com == "TOGGLE_VIDEO")
     {
