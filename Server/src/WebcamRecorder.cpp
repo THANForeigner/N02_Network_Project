@@ -12,7 +12,7 @@ static std::string getCurrentTimestamp(const char* format) {
 }
 
 static fs::path getRecordFolderPath() {
-    return fs::current_path().parent_path() / "record";
+    return "../data/video";
 }
 
 static void ensureRecordFolder() {
@@ -30,7 +30,7 @@ bool startRecording(std::string &path) {
     if (recording) return false;
     ensureRecordFolder();
     std::string filename = (getRecordFolderPath() / (getCurrentTimestamp("%Y%m%d_%H%M%S") + ".avi")).string();
-    path="../data/video/"+filename+".avi";
+    path=filename;
 
     recording = true;
 
@@ -74,11 +74,18 @@ bool startRecording(std::string &path) {
 }
 
 void stopRecording() {
-    std::lock_guard<std::mutex> lock(recordMutex);
-    if (recording) {
-        recording = false;
-        if (recordThread.joinable())
-            recordThread.join();
+    if (isRecording()) { 
+        std::thread thread_to_join;
+        {
+            std::lock_guard<std::mutex> lock(recordMutex);
+            recording = false;
+            if(recordThread.joinable()) {
+                thread_to_join.swap(recordThread); 
+            }
+        } 
+        if (thread_to_join.joinable()) {
+            thread_to_join.join();
+        }
     }
 }
 

