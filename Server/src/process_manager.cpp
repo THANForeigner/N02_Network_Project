@@ -3,6 +3,7 @@
 #include <tchar.h>
 #include <string>
 #include <iostream>
+#include <fstream>
 #include "process_manager.h"
 
 bool startProcess(const std::wstring& appName) {
@@ -70,11 +71,12 @@ void listProcesses() {
 
     PROCESSENTRY32W pe;
     pe.dwSize = sizeof(PROCESSENTRY32W);
+    std::wofstream fs("../data/process/running_process.txt");
 
     if (Process32FirstW(hSnapshot, &pe)) {
-        std::wcout << L"--- Running Processes ---\n";
+        fs << L"--- Running Processes ---\n";
         do {
-            std::wcout << L"PID: " << pe.th32ProcessID
+            fs << L"PID: " << pe.th32ProcessID
                        << L" | Name: " << pe.szExeFile << std::endl;
         } while (Process32NextW(hSnapshot, &pe));
     } else {
