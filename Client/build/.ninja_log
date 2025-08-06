@@ -1,7 +1,0 @@
-# ninja log v7
-15	1909	7759929666137392	CMakeFiles/NetworkProjectClient.dir/main.cpp.obj	c4275b5df6d0a467
-17	4701	7759771899603472	CMakeFiles/NetworkProjectClient.dir/src/gmail.cpp.obj	29462c7d47ff2cfb
-21	1877	7759772056019782	CMakeFiles/NetworkProjectClient.dir/src/client.cpp.obj	62a0dc372b74d59d
-19	379	7759929751661603	NetworkProjectClient.exe	55bd0cf334a91a0a
-15	1712	7759931151825776	CMakeFiles/NetworkProjectClient.dir/main.cpp.obj	c4275b5df6d0a467
-18	235	7759931219312455	NetworkProjectClient.exe	55bd0cf334a91a0a
