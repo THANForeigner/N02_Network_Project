@@ -139,6 +139,11 @@ void Server::ProcessCommand()
             SendResult(path_to_send);
         }
     }
+    else if(com=="TAKE_SCREEN_SHOT")
+    {
+        takeScreenShot();
+        SendResult("../data/screenshot/screenshot.png");
+    }
     else if (com == "GET_RUNNING_PROCESS")
     {
        listProcesses();

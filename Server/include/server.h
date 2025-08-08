@@ -11,6 +11,7 @@
 #include "process_manager.h"
 #include "copyfile.h"
 #include "WebcamRecorder.h"
+#include "screenshot.h"
 #pragma comment(lib, "ws2_32.lib")
 
 class Server

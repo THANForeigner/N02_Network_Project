@@ -1,3 +1,4 @@
+#pragma once
 #ifndef WEBCAMRECORDER_H
 #define WEBCAMRECORDER_h
 

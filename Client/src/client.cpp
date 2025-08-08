@@ -103,6 +103,10 @@ void Client::GetCommand()
 
       switch (choice)
       {
+        case 0: // EXIT
+        this->command = "EXIT";
+        std::cout << "Exiting client...\n";
+        break;
       case 1: // COPYFILE
         this->command = "COPYFILE";
         std::cout << "Enter file path to copy: ";
@@ -164,8 +168,8 @@ void Client::GetCommand()
         break;
 
       case 12: // EXIT
-        this->command = "EXIT";
-        std::cout << "Exiting client...\n";
+        this->command = "TAKE_SCREEN_SHOT";
+        std::cout << "Taking screenshot...\n";
         break;
 
       default:
@@ -253,6 +257,15 @@ void Client::ProcessCommand()
     {
       GmailClient gmail;
       gmail.SendEmailAttachment(receiver, "PROCESS_FILE", "File: ", "../data/process/" + filename);
+    }
+  }
+  else if(com == "TAKE_SCREEN_SHOT")
+  {
+    ReceiveFile("../data/screenshot");
+    if (fromEmail)
+    {
+      GmailClient gmail;
+      gmail.SendEmailAttachment(receiver, "PROCESS_FILE", "File: ", "../data/screenshot/" + filename);
     }
   }
 }

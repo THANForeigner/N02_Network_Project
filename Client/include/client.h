@@ -19,6 +19,7 @@ public:
           GET_RUNNING_PROCESS,
           RUN_PROCESS, //RUN_PROCESS name
           SHUTDOWN_PROCESS, //SHUTDOWN_PROCESS name
+          TAKE_SCREEN_SHOT,
           SLEEP,
           RESTART,
           SHUTDOWN

@@ -14,7 +14,7 @@ void DrawMenu()
     std::cout << "\n========================================\n";
     std::cout << "         Remote Control Main Menu       \n";
     std::cout << "========================================\n\n";
-
+     std::cout << std::left << std::setw(3) << "0" << "EXIT                \n";
     std::cout << std::left << std::setw(3) << "1" << "COPYFILE                (COPYFILE <path>)\n";
     std::cout << std::setw(3) << "2" << "TOGGLE_VIDEO             (Start/Stop video capture)\n";
     std::cout << std::setw(3) << "3" << "GET_VIDEO                (Download last recorded video)\n";
@@ -26,10 +26,10 @@ void DrawMenu()
     std::cout << std::setw(3) << "9" << "SLEEP                    (Put system to sleep)\n";
     std::cout << std::setw(3) << "10" << "RESTART                  (Restart system)\n";
     std::cout << std::setw(3) << "11" << "SHUTDOWN                 (Shutdown system)\n";
-    std::cout << std::setw(3) << "12" << "EXIT CLIENT                               \n";
+    std::cout << std::setw(3) << "12" << "TAKE SCREENSHOT                               \n";
 
     std::cout << "\n----------------------------------------\n";
-    std::cout << "Enter your choice (1-12): ";
+    std::cout << "Enter your choice (0-12): ";
 }
 
 void Clear()
