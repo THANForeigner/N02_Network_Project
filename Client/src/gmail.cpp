@@ -38,6 +38,8 @@ static json http_post(const std::string &url, const std::string &body) {
   curl_easy_setopt(c, CURLOPT_WRITEFUNCTION, write_cb);
   curl_easy_setopt(c, CURLOPT_WRITEDATA, &resp);
 
+  curl_easy_setopt(c, CURLOPT_CAINFO, "cacert.pem");
+
   CURLcode rc = curl_easy_perform(c);
   curl_easy_cleanup(c);
 
@@ -204,7 +206,7 @@ bool send_email(const std::string &bearer_token, const std::string &to,
   curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload.c_str());
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_cb);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, &resp);
-
+  curl_easy_setopt(curl, CURLOPT_CAINFO, "cacert.pem");
   CURLcode rc = curl_easy_perform(curl);
   long httpCode = 0;
   curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
@@ -279,7 +281,7 @@ bool send_email_with_attachment(const std::string &bearer_token,
   curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload.c_str());
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_cb);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, &resp);
-
+  curl_easy_setopt(curl, CURLOPT_CAINFO, "cacert.pem");
   CURLcode rc = curl_easy_perform(curl);
   long httpCode = 0;
   curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
@@ -378,6 +380,7 @@ bool read_latest_email(const std::string &bearer_token, std::string &mailhead, s
     curl_easy_setopt(c, CURLOPT_URL, url.c_str());
     curl_easy_setopt(c, CURLOPT_WRITEFUNCTION, write_cb);
     curl_easy_setopt(c, CURLOPT_WRITEDATA, &msgResp);
+    curl_easy_setopt(c, CURLOPT_CAINFO, "cacert.pem");
     if (curl_easy_perform(c) != CURLE_OK) {
       curl_easy_cleanup(c);
       return false;

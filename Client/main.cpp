@@ -5,6 +5,7 @@
 #include <chrono>
 int main()
 {
+  using namespace std::chrono_literals;
   using namespace std::this_thread;
   using namespace std::chrono;
   Client client;
@@ -14,8 +15,7 @@ int main()
   {
     if(!client.Init(ip, port))
     {
-      sleep_for(nanoseconds(10));
-      sleep_until(system_clock::now() + seconds(30));
+      std::this_thread::sleep_for(5s);
     }
     else break;
     Clear();
@@ -28,10 +28,8 @@ int main()
     if (client.command == "EXIT")
       break;
     client.ProcessCommand();
-    if(client.fromEmail)
-    {
-      
-    }
+    std::this_thread::sleep_for(5s);
+    Clear();
     client.command.clear();
   }
 

