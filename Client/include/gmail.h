@@ -17,7 +17,7 @@ public:
   bool SendEmailAttachment(const std::string &to, const std::string &subject,
                            const std::string &body,
                            const std::string &attachment_path);
-  bool GetLatestEmailBody(std::string &out_body);
+  bool GetLatestEmailBody(std::string &out_head,std::string &out_body, std::string &receiver);
   bool RunInteractiveLogin();
 
 private:

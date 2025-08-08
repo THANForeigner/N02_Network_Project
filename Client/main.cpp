@@ -1,26 +1,38 @@
 #include "client.h"
+#include "UI.h"
 #include "sstream"
-int main() {
+#include <thread>   
+#include <chrono>
+int main()
+{
+  using namespace std::this_thread;
+  using namespace std::chrono;
   Client client;
-  client.Init("localhost", "27015");
-
-  while (true) {
+  std::string ip, port;
+  DrawGetIPPORT(ip, port);
+  while (true)
+  {
+    if(!client.Init(ip, port))
+    {
+      sleep_for(nanoseconds(10));
+      sleep_until(system_clock::now() + seconds(30));
+    }
+    else break;
+    Clear();
+    DrawGetIPPORT(ip, port);
+  }
+  while (true)
+  {
+    DrawMenu();
     client.GetCommand();
     if (client.command == "EXIT")
       break;
-    client.SendCommand();
-    std::stringstream ss(client.command);
-    std::string com, body;
-    ss >> com >> body;
-    if (com == "COPYFILE") {
-      client.ReceiveFile("../data/copyfile");
-    } else if (com == "GET_VIDEO") {
-      client.ReceiveFile("../data/video");
-    } else if (com == "GET_KEYLOGGER") {
-      client.ReceiveFile("../data/keylogger");
-    } else if (com == "GET_RUNNING_PROCESS") {
-      client.ReceiveFile("../data/process");
+    client.ProcessCommand();
+    if(client.fromEmail)
+    {
+      
     }
+    client.command.clear();
   }
 
   client.Shutdown();

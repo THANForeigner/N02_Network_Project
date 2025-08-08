@@ -341,7 +341,7 @@ static std::string decode_b64url(std::string s) {
   }
   return out;
 }
-bool read_latest_email(const std::string &bearer_token, std::string &mailBody) {
+bool read_latest_email(const std::string &bearer_token, std::string &mailhead, std::string &mailBody, std::string &receiver) {
   std::string listResp;
   { // 1) Lấy ID mới nhất
     CURL *c = curl_easy_init();
@@ -389,12 +389,19 @@ bool read_latest_email(const std::string &bearer_token, std::string &mailBody) {
 
   // 3) Trích Subject
   std::string subject;
+  std::string from_address;
   for (auto &h : jMsg["payload"]["headers"])
     if (h["name"] == "Subject") {
       subject = h["value"];
-      break;
     }
-
+    else if (h["name"] == "From") {
+        from_address = h["value"];
+    }
+  
+  std::string sender=decode_b64url(from_address);
+  std::string head=decode_b64url(subject);
+  mailhead=head;
+  receiver=sender;
   // 4) Lấy phần text/plain
   std::string data;
   auto &payload = jMsg["payload"];
@@ -534,9 +541,9 @@ bool GmailClient::SendEmailAttachment(const std::string &to,
   return send_email_with_attachment(token_box_->access_token, to, subject, body,
                                     attachment_path);
 }
-bool GmailClient::GetLatestEmailBody(std::string &out_body) {
+bool GmailClient::GetLatestEmailBody(std::string &out_head,std::string &out_body, std::string &receiver) {
   if (!ensureValidToken()) {
     return false;
   }
-  return read_latest_email(token_box_->access_token, out_body);
+  return read_latest_email(token_box_->access_token, out_head, out_body, receiver);
 }
