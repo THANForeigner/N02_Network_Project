@@ -7,6 +7,7 @@
 #include <string>
 
 struct TokenBox;
+const long long MAX_ATTACHMENT_SIZE_BYTES = 25 * 1024 * 1024;
 
 class GmailClient {
 public:
@@ -19,7 +20,8 @@ public:
                            const std::string &attachment_path);
   bool GetLatestEmailBody(std::string &out_head,std::string &out_body, std::string &receiver);
   bool RunInteractiveLogin();
-
+  std::string UploadToDriveAndGetShareableLink(const std::string &file_path);
+  void SendVideoThroughEmail(const std::string& receiver, const std::string& videoPath);
 private:
   bool ensureValidToken();
   std::string client_id_;

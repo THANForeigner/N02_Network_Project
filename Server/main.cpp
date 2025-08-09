@@ -2,7 +2,10 @@
 
 int main()
 {
-    Server server;
+    std::cout<<"Enter port: ";
+    std::string port;
+    std::cin>>port;
+    Server server(port);
     server.Init();
      while (true) 
     {

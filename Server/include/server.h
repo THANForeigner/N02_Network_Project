@@ -38,6 +38,7 @@ public:
         {
             port = PORT;
         }
+        else port=_port;
     }
     Server();
     void Init();

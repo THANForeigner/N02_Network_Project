@@ -22,7 +22,7 @@ void Server::Init()
     hints.ai_protocol = IPPROTO_TCP;
     hints.ai_flags = AI_PASSIVE;
 
-    if (getaddrinfo(nullptr, PORT, &hints, &res) != 0)
+    if (getaddrinfo(nullptr, port.c_str(), &hints, &res) != 0)
     {
         std::cerr << "Get address info failed\n";
         WSACleanup();

@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <filesystem>
 #ifdef _WIN32
 #include <windows.h> // for Win32 ShellExecute fallback
 #endif
@@ -209,7 +210,7 @@ bool send_email(const std::string &bearer_token, const std::string &to,
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_cb);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, &resp);
 #ifdef WIN32
-  curl_easy_setopt(c, CURLOPT_CAINFO, "../cacert.pem");
+  curl_easy_setopt(curl, CURLOPT_CAINFO, "../cacert.pem");
 #endif
   CURLcode rc = curl_easy_perform(curl);
   long httpCode = 0;
@@ -286,7 +287,7 @@ bool send_email_with_attachment(const std::string &bearer_token,
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_cb);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, &resp);
 #ifdef WIN32
-  curl_easy_setopt(c, CURLOPT_CAINFO, "../cacert.pem");
+  curl_easy_setopt(curl, CURLOPT_CAINFO, "../cacert.pem");
 #endif
   CURLcode rc = curl_easy_perform(curl);
   long httpCode = 0;
@@ -404,8 +405,8 @@ void mark_email_as_read(const std::string &bearer_token,
     std::cerr << "[ERROR] Server Response: " << response_string << std::endl;
   } else {
     // Success!
-    std::cout << "[SUCCESS] Gmail API returned HTTP " << http_code
-              << ". Message marked as read." << std::endl;
+   // std::cout << "[SUCCESS] Gmail API returned HTTP " << http_code
+    //          << ". Message marked as read." << std::endl;
   }
 
   curl_easy_cleanup(curl);
@@ -482,7 +483,7 @@ bool read_latest_unread_email(const std::string &bearer_token,
     curl_easy_setopt(c, CURLOPT_WRITEFUNCTION, write_cb);
     curl_easy_setopt(c, CURLOPT_WRITEDATA, &msgResp);
 #ifdef WIN32
-    curl_easy_setopt(curl, CURLOPT_CAINFO, "cacert.pem");
+    curl_easy_setopt(c, CURLOPT_CAINFO, "cacert.pem");
 #endif
     CURLcode res = curl_easy_perform(c);
     curl_slist_free_all(h);
@@ -524,7 +525,7 @@ bool read_latest_unread_email(const std::string &bearer_token,
     }
 
     if (data.empty()) {
-      std::cerr << "No plain text part found in the email.\n";
+      //std::cerr << "No plain text part found in the email.\n";
       return false;
     }
 
@@ -563,15 +564,17 @@ GmailClient::GmailClient() {
   if (ft) {
     try {
       *token_box_ = TokenBox::load(json::parse(ft));
-      std::cout << "🔑 Token loaded from token.json\n";
+      //std::cout << "🔑 Token loaded from token.json\n";
     } catch (...) {
-      std::cerr
-          << "⚠️ Could not parse token.json. A new login may be required.\n";
+      //std::cerr
+      //    << "⚠️ Could not parse token.json. A new login may be required.\n";
     }
   } else {
     RunInteractiveLogin();
   }
 }
+
+
 
 GmailClient::~GmailClient() { curl_global_cleanup(); }
 
@@ -584,7 +587,7 @@ bool GmailClient::ensureValidToken() {
   if (!token_box_->hasValidRefreshToken()) {
     std::cerr
         << "❌ No refresh token available. Please run interactive login.\n";
-    return RunInterativeLogin();
+    return RunInteractiveLogin();
   }
 
   std::cout << "Attempting to refresh token...\n";
@@ -594,9 +597,10 @@ bool GmailClient::ensureValidToken() {
 bool GmailClient::RunInteractiveLogin() {
   const std::string redirect = "urn:ietf:wg:oauth:2.0:oob";
   // CORRECTED - FULL SCOPE
-  const std::string scope = "https://www.googleapis.com/auth/gmail.modify "
-                            "https://www.googleapis.com/auth/gmail.readonly "
-                            "https://www.googleapis.com/auth/gmail.send";
+const std::string scope = "https://www.googleapis.com/auth/gmail.modify "
+                          "https://www.googleapis.com/auth/gmail.readonly "
+                          "https://www.googleapis.com/auth/gmail.send "
+                          "https://www.googleapis.com/auth/drive.file";
   std::string auth_url =
       "https://accounts.google.com/o/oauth2/v2/auth?response_type=code" +
       std::string("&client_id=") + urlencode(client_id_) +
@@ -669,4 +673,174 @@ bool GmailClient::GetLatestEmailBody(std::string &out_head,
   }
   return read_latest_unread_email(token_box_->access_token, out_head, out_body,
                                   receiver);
+}
+
+std::string GmailClient::UploadToDriveAndGetShareableLink(const std::string &file_path) {
+    if (!ensureValidToken()) {
+        std::cerr << "Error: Cannot upload to Drive without a valid token.\n";
+        return "";
+    }
+
+    // 1. Check if file exists and read its content
+    std::ifstream file_stream(file_path, std::ios::binary);
+    if (!file_stream) {
+        std::cerr << "Error opening file for upload: " << file_path << std::endl;
+        return "";
+    }
+    std::string file_content((std::istreambuf_iterator<char>(file_stream)),
+                             std::istreambuf_iterator<char>());
+    file_stream.close();
+    
+    // Extract just the filename from the path
+    std::string filename = std::filesystem::path(file_path).filename().string();
+
+    // 2. Perform a multipart upload to Google Drive
+    std::cout << "Uploading " << filename << " to Google Drive..." << std::endl;
+
+    CURL *curl = curl_easy_init();
+    if (!curl) return "";
+
+    std::string upload_response;
+    std::string file_id;
+    std::string web_link;
+
+    // --- Part A: Upload the file ---
+    {
+        // The boundary is a random string that won't appear in the content.
+        const std::string boundary = "----------BOUNDARY_STRING_12345";
+        
+        // Metadata part of the request (sets the filename on Google Drive)
+        json metadata = {{"name", filename}};
+        std::string request_body = "--" + boundary + "\r\n";
+        request_body += "Content-Type: application/json; charset=UTF-8\r\n\r\n";
+        request_body += metadata.dump() + "\r\n\r\n";
+        
+        // File content part of the request
+        request_body += "--" + boundary + "\r\n";
+        request_body += "Content-Type: application/octet-stream\r\n\r\n";
+        request_body += file_content + "\r\n";
+        
+        // Final boundary
+        request_body += "--" + boundary + "--\r\n";
+
+        struct curl_slist *headers = nullptr;
+        headers = curl_slist_append(headers, ("Authorization: Bearer " + token_box_->access_token).c_str());
+        headers = curl_slist_append(headers, ("Content-Type: multipart/related; boundary=" + boundary).c_str());
+        
+        curl_easy_setopt(curl, CURLOPT_URL, "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart");
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, request_body.c_str());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, request_body.length());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_cb);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &upload_response);
+        #ifdef WIN32
+        curl_easy_setopt(curl, CURLOPT_CAINFO, "../cacert.pem");
+        #endif
+
+        CURLcode res = curl_easy_perform(curl);
+        long http_code = 0;
+        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
+        curl_slist_free_all(headers);
+
+        if (res != CURLE_OK || http_code >= 300) {
+            std::cerr << "Google Drive upload failed. HTTP " << http_code << "\nResponse: " << upload_response << std::endl;
+            curl_easy_cleanup(curl);
+            return "";
+        }
+        
+        try {
+            json j = json::parse(upload_response);
+            file_id = j["id"];
+            web_link = j["webViewLink"];
+            std::cout << "File uploaded successfully. File ID: " << file_id << std::endl;
+        } catch(const json::exception& e) {
+            std::cerr << "Error parsing Drive upload response: " << e.what() << std::endl;
+            curl_easy_cleanup(curl);
+            return "";
+        }
+    }
+
+    // --- Part B: Set permissions to make the file publicly readable ---
+    if (!file_id.empty()) {
+        std::cout << "Setting public permissions for the file..." << std::endl;
+        curl_easy_reset(curl); // Reset curl handle for the next request
+
+        std::string perm_url = "https://www.googleapis.com/drive/v3/files/" + file_id + "/permissions";
+        json perm_payload = { {"role", "reader"}, {"type", "anyone"} };
+        std::string perm_body = perm_payload.dump();
+        std::string perm_response;
+
+        struct curl_slist *headers = nullptr;
+        headers = curl_slist_append(headers, ("Authorization: Bearer " + token_box_->access_token).c_str());
+        headers = curl_slist_append(headers, "Content-Type: application/json");
+
+        curl_easy_setopt(curl, CURLOPT_URL, perm_url.c_str());
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, perm_body.c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_cb);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &perm_response);
+        #ifdef WIN32
+        curl_easy_setopt(curl, CURLOPT_CAINFO, "../cacert.pem");
+        #endif
+
+        CURLcode res = curl_easy_perform(curl);
+        long http_code = 0;
+        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
+        curl_slist_free_all(headers);
+
+        if (res != CURLE_OK || http_code >= 300) {
+            std::cerr << "Failed to set Drive permissions. HTTP " << http_code << "\nResponse: " << perm_response << std::endl;
+            curl_easy_cleanup(curl);
+            return "";
+        }
+        std::cout << "Permissions set successfully. The link is now public." << std::endl;
+    }
+
+    curl_easy_cleanup(curl);
+    return web_link; // Return the shareable link
+}
+
+void GmailClient::SendVideoThroughEmail(const std::string& receiver, const std::string& videoPath) {
+    if (!std::filesystem::exists(videoPath)) {
+        std::cerr << "Error: Video file not found at " << videoPath << std::endl;
+        SendEmail(receiver, "VIDEO_REQUEST_FAILED", "Sorry, the requested video could not be found.");
+        return;
+    }
+
+    try {
+        uintmax_t fileSize = std::filesystem::file_size(videoPath);
+        std::string filename = std::filesystem::path(videoPath).filename().string();
+
+        if (fileSize > MAX_ATTACHMENT_SIZE_BYTES) {
+            std::cout << "Video is >25MB. Uploading to Google Drive..." << std::endl;
+            
+            // Use the new method to upload and get a link
+            std::string shareableLink = UploadToDriveAndGetShareableLink(videoPath);
+
+            if (!shareableLink.empty()) {
+                std::string subject = "Link to Your Video: " + filename;
+                std::string body = "The video you requested was too large to attach.\n\n"
+                                   "You can view or download it from Google Drive using the link below:\n\n"
+                                   + shareableLink;
+                
+                SendEmail(receiver, subject, body);
+                std::cout << "Successfully sent email with Google Drive link." << std::endl;
+            } else {
+                std::cerr << "Failed to upload to Google Drive. Sending failure notification." << std::endl;
+                SendEmail(receiver, "VIDEO_REQUEST_FAILED", "Sorry, there was an error processing your large video file. The upload failed.");
+            }
+        } else {
+            std::cout << "Video is small enough. Sending as a direct attachment..." << std::endl;
+            std::string subject = "Your Video: " + filename;
+            std::string body = "Please find the requested video file attached.";
+            
+            if (SendEmailAttachment(receiver, subject, body, videoPath)) {
+                std::cout << "Successfully sent email with video attachment." << std::endl;
+            } else {
+                std::cout << "Failed to send email with attachment." << std::endl;
+            }
+        }
+    } catch (const std::filesystem::filesystem_error& e) {
+        std::cerr << "Filesystem error: " << e.what() << std::endl;
+    }
 }
