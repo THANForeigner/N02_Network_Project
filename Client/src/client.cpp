@@ -36,7 +36,7 @@ bool Client::Init(std::string hostIP, std::string _port)
     serverHost = "localhost";
   else
     serverHost = hostIP;
-  if (port.empty())
+  if (_port.empty())
   {
     port = PORT;
   }
@@ -262,13 +262,13 @@ void Client::ProcessCommand()
       gmail.SendEmailAttachment(receiver, "PROCESS_FILE", "File: ", "../data/process/" + filename);
     }
   }
-  else if (com == "TAKE_SCREEN_SHOT")
+  else if (com == "TAKE_SCREENSHOT")
   {
     ReceiveFile("../data/screenshot");
     if (fromEmail)
     {
       GmailClient gmail;
-      gmail.SendEmailAttachment(receiver, "PROCESS_FILE", "File: ", "../data/screenshot/" + filename);
+      gmail.SendEmailAttachment(receiver, "SCREENSHOT_FILE", "File: ", "../data/screenshot/" + filename);
     }
   }
 }

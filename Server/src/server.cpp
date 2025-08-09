@@ -139,7 +139,7 @@ void Server::ProcessCommand()
             SendResult(path_to_send);
         }
     }
-    else if(com=="TAKE_SCREEN_SHOT")
+    else if(com=="TAKE_SCREENSHOT")
     {
         takeScreenShot();
         SendResult("../data/screenshot/screenshot.png");
