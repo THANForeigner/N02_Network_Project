@@ -38,7 +38,8 @@ static json http_post(const std::string &url, const std::string &body) {
   curl_easy_setopt(c, CURLOPT_WRITEFUNCTION, write_cb);
   curl_easy_setopt(c, CURLOPT_WRITEDATA, &resp);
 
-  curl_easy_setopt(c, CURLOPT_CAINFO, "cacert.pem");
+  // --- FIX: Point to the CA certificate bundle ---
+  // curl_easy_setopt(c, CURLOPT_CAINFO, "../cacert.pem");
 
   CURLcode rc = curl_easy_perform(c);
   curl_easy_cleanup(c);
@@ -206,7 +207,8 @@ bool send_email(const std::string &bearer_token, const std::string &to,
   curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload.c_str());
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_cb);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, &resp);
-  curl_easy_setopt(curl, CURLOPT_CAINFO, "cacert.pem");
+  // --- FIX: Point to the CA certificate bundle ---
+  // curl_easy_setopt(curl, CURLOPT_CAINFO, "cacert.pem");
   CURLcode rc = curl_easy_perform(curl);
   long httpCode = 0;
   curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
@@ -281,7 +283,8 @@ bool send_email_with_attachment(const std::string &bearer_token,
   curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload.c_str());
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_cb);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, &resp);
-  curl_easy_setopt(curl, CURLOPT_CAINFO, "cacert.pem");
+  // --- FIX: Point to the CA certificate bundle ---
+  //  curl_easy_setopt(curl, CURLOPT_CAINFO, "cacert.pem");
   CURLcode rc = curl_easy_perform(curl);
   long httpCode = 0;
   curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
@@ -307,16 +310,16 @@ bool send_email_with_attachment(const std::string &bearer_token,
 // Returns true if a message was fetched and decoded, false on error.
 // -----------------------------------------------------------------------------
 static std::string decode_b64url(std::string s) {
-  for (char &c : s) // chuyển ký tự URL‑safe → chuẩn
+  for (char &c : s) // convert URL-safe chars -> standard chars
     if (c == '-')
       c = '+';
     else if (c == '_')
       c = '/';
   while (s.size() % 4)
-    s.push_back('='); // thêm padding nếu thiếu
+    s.push_back('='); // add padding if missing
 
   static const int T[256] = {
-      // bảng tra ngược
+      // reverse lookup table
       -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, -1, -1, 63,
@@ -343,87 +346,190 @@ static std::string decode_b64url(std::string s) {
   }
   return out;
 }
-bool read_latest_email(const std::string &bearer_token, std::string &mailhead, std::string &mailBody, std::string &receiver) {
+// Helper function to get the HTTP response code from a curl handle
+static long get_http_code(CURL *curl) {
+  long http_code = 0;
+  // Use CURLINFO_RESPONSE_CODE for the primary HTTP status
+  curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
+  return http_code;
+}
+
+// "Bulletproof" version of the function for debugging
+void mark_email_as_read(const std::string &bearer_token,
+                        const std::string &msgId) {
+  if (msgId.empty()) {
+    return;
+  }
+
+  CURL *curl = curl_easy_init();
+  if (!curl) {
+    std::cerr << "[FATAL] Failed to initialize curl." << std::endl;
+    return;
+  }
+
+  std::string url = "https://gmail.googleapis.com/gmail/v1/users/me/messages/" +
+                    msgId + "/modify";
+  std::string json_payload = R"({"removeLabelIds": ["UNREAD"]})";
+  std::string response_string; // To capture the server's error message
+
+  struct curl_slist *headers = nullptr;
+  headers = curl_slist_append(
+      headers, ("Authorization: Bearer " + bearer_token).c_str());
+  headers = curl_slist_append(headers, "Content-Type: application/json");
+
+  curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+  curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+  curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_payload.c_str());
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_cb);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_string);
+
+  // CRITICAL: Ensure SSL verification is enabled
+  // curl_easy_setopt(curl, CURLOPT_CAINFO, "cacert.pem");
+
+  CURLcode res = curl_easy_perform(curl);
+  long http_code = get_http_code(curl);
+
+  if (res != CURLE_OK) {
+    // This is a curl-level error (e.g., can't connect, SSL problem)
+    std::cerr << "[ERROR] curl_easy_perform() failed: "
+              << curl_easy_strerror(res) << std::endl;
+  } else if (http_code >= 300) {
+    // The API request was sent, but Google returned an error
+    std::cerr << "[ERROR] Gmail API returned HTTP " << http_code << "."
+              << std::endl;
+    std::cerr << "[ERROR] Server Response: " << response_string << std::endl;
+  } else {
+    // Success!
+    std::cout << "[SUCCESS] Gmail API returned HTTP " << http_code
+              << ". Message marked as read." << std::endl;
+  }
+
+  curl_easy_cleanup(curl);
+  curl_slist_free_all(headers);
+}
+
+// --- Reads the single latest unread email ---
+bool read_latest_unread_email(const std::string &bearer_token,
+                              std::string &mailhead, std::string &mailBody,
+                              std::string &receiver) {
   std::string listResp;
-  { // 1) Lấy ID mới nhất
+  std::string msgId;
+
+  // 1) Get the ID of the single latest unread message
+  {
     CURL *c = curl_easy_init();
+    if (!c)
+      return false;
+
     struct curl_slist *h = nullptr;
     h = curl_slist_append(h, ("Authorization: Bearer " + bearer_token).c_str());
-    curl_easy_setopt(c, CURLOPT_HTTPHEADER, h);
+
+    // THIS IS THE KEY: "maxResults=1" ensures we only get one email ID
     curl_easy_setopt(c, CURLOPT_URL,
                      "https://gmail.googleapis.com/gmail/v1/users/me/"
-                     "messages?maxResults=1&labelIds=INBOX");
+                     "messages?maxResults=1&q=in:inbox%20is:unread");
+
+    curl_easy_setopt(c, CURLOPT_HTTPHEADER, h);
     curl_easy_setopt(c, CURLOPT_WRITEFUNCTION, write_cb);
     curl_easy_setopt(c, CURLOPT_WRITEDATA, &listResp);
-    if (curl_easy_perform(c) != CURLE_OK) {
-      curl_easy_cleanup(c);
-      return false;
-    }
+
+    CURLcode res = curl_easy_perform(c);
     curl_slist_free_all(h);
     curl_easy_cleanup(c);
-  }
-  auto jList = nlohmann::json::parse(listResp);
-  if (jList["messages"].empty())
-    return false;
-  std::string msgId = jList["messages"][0]["id"];
 
-  // 2) Lấy nội dung chi tiết
+    if (res != CURLE_OK) {
+      std::cerr << "Failed to list messages: " << curl_easy_strerror(res)
+                << std::endl;
+      return false;
+    }
+  }
+
+  try {
+    auto jList = nlohmann::json::parse(listResp);
+    // If "messages" is not found or is empty, there are no new emails.
+    if (!jList.contains("messages") || jList["messages"].empty()) {
+      // This is normal behavior when there are no unread emails.
+      return false;
+    }
+    msgId = jList["messages"][0]["id"];
+  } catch (const nlohmann::json::parse_error &e) {
+    std::cerr << "JSON parse error (list messages): " << e.what() << std::endl;
+    return false;
+  }
+
+  // If we reach here, we have exactly one message ID to process.
+
+  // 2) Get the full content for that one message
   std::string msgResp;
   {
     CURL *c = curl_easy_init();
+    if (!c)
+      return false;
+
     std::string url =
-        "https://gmail.googleapis.com/gmail/v1/users/me/messages/" + msgId +
-        "?format=full";
+        "https://gmail.googleapis.com/gmail/v1/users/me/messages/" + msgId;
     struct curl_slist *h = nullptr;
     h = curl_slist_append(h, ("Authorization: Bearer " + bearer_token).c_str());
     curl_easy_setopt(c, CURLOPT_HTTPHEADER, h);
     curl_easy_setopt(c, CURLOPT_URL, url.c_str());
     curl_easy_setopt(c, CURLOPT_WRITEFUNCTION, write_cb);
     curl_easy_setopt(c, CURLOPT_WRITEDATA, &msgResp);
-    curl_easy_setopt(c, CURLOPT_CAINFO, "cacert.pem");
-    if (curl_easy_perform(c) != CURLE_OK) {
-      curl_easy_cleanup(c);
-      return false;
-    }
+
+    CURLcode res = curl_easy_perform(c);
     curl_slist_free_all(h);
     curl_easy_cleanup(c);
-  }
-  auto jMsg = nlohmann::json::parse(msgResp);
 
-  // 3) Trích Subject
-  std::string subject;
-  std::string from_address;
-  for (auto &h : jMsg["payload"]["headers"])
-    if (h["name"] == "Subject") {
-      subject = h["value"];
+    if (res != CURLE_OK) {
+      std::cerr << "Failed to get message details: " << curl_easy_strerror(res)
+                << std::endl;
+      return false;
     }
-    else if (h["name"] == "From") {
+  }
+
+  // 3) Extract data and body from the message
+  try {
+    auto jMsg = nlohmann::json::parse(msgResp);
+    std::string subject, from_address;
+    for (const auto &h : jMsg["payload"]["headers"]) {
+      if (h["name"] == "Subject")
+        subject = h["value"];
+      else if (h["name"] == "From")
         from_address = h["value"];
     }
-  
-  std::string sender=decode_b64url(from_address);
-  std::string head=decode_b64url(subject);
-  mailhead=head;
-  receiver=sender;
-  // 4) Lấy phần text/plain
-  std::string data;
-  auto &payload = jMsg["payload"];
-  if (payload["body"]["size"].get<int>() > 0)
-    data = payload["body"]["data"];
-  else if (payload.contains("parts"))
-    for (auto &p : payload["parts"])
-      if (p["mimeType"] == "text/plain" && p["body"]["size"].get<int>() > 0) {
-        data = p["body"]["data"];
-        break;
+
+    mailhead = subject;
+    receiver = from_address;
+
+    std::string data;
+    const auto &payload = jMsg["payload"];
+    if (payload.contains("parts")) {
+      for (const auto &p : payload["parts"]) {
+        if (p["mimeType"] == "text/plain" && p.contains("body") &&
+            p["body"].contains("data")) {
+          data = p["body"]["data"];
+          break;
+        }
       }
-  if (data.empty()) {
-    std::cerr << "No plain part\n";
+    } else if (payload.contains("body") && payload["body"].contains("data")) {
+      data = payload["body"]["data"];
+    }
+
+    if (data.empty()) {
+      std::cerr << "No plain text part found in the email.\n";
+      return false;
+    }
+
+    mailBody = decode_b64url(data); // Assumes you have this function
+
+  } catch (const nlohmann::json::parse_error &e) {
+    std::cerr << "JSON parse error (message details): " << e.what()
+              << std::endl;
     return false;
   }
 
-  std::string body = decode_b64url(data);
+  // 4) Mark this specific email as read so we don't get it again
+  mark_email_as_read(bearer_token, msgId);
 
-  mailBody = body;
   return true;
 }
 
@@ -478,7 +584,9 @@ bool GmailClient::ensureValidToken() {
 
 bool GmailClient::RunInteractiveLogin() {
   const std::string redirect = "urn:ietf:wg:oauth:2.0:oob";
-  const std::string scope = "https://www.googleapis.com/auth/gmail.readonly "
+  // CORRECTED - FULL SCOPE
+  const std::string scope = "https://www.googleapis.com/auth/gmail.modify "
+                            "https://www.googleapis.com/auth/gmail.readonly "
                             "https://www.googleapis.com/auth/gmail.send";
   std::string auth_url =
       "https://accounts.google.com/o/oauth2/v2/auth?response_type=code" +
@@ -544,9 +652,12 @@ bool GmailClient::SendEmailAttachment(const std::string &to,
   return send_email_with_attachment(token_box_->access_token, to, subject, body,
                                     attachment_path);
 }
-bool GmailClient::GetLatestEmailBody(std::string &out_head,std::string &out_body, std::string &receiver) {
+bool GmailClient::GetLatestEmailBody(std::string &out_head,
+                                     std::string &out_body,
+                                     std::string &receiver) {
   if (!ensureValidToken()) {
     return false;
   }
-  return read_latest_email(token_box_->access_token, out_head, out_body, receiver);
+  return read_latest_unread_email(token_box_->access_token, out_head, out_body,
+                                  receiver);
 }
