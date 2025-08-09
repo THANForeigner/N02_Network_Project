@@ -38,9 +38,10 @@ static json http_post(const std::string &url, const std::string &body) {
   curl_easy_setopt(c, CURLOPT_WRITEFUNCTION, write_cb);
   curl_easy_setopt(c, CURLOPT_WRITEDATA, &resp);
 
-  // --- FIX: Point to the CA certificate bundle ---
-  // curl_easy_setopt(c, CURLOPT_CAINFO, "../cacert.pem");
-
+// --- FIX: Point to the CA certificate bundle ---
+#ifdef WIN32
+  curl_easy_setopt(c, CURLOPT_CAINFO, "../cacert.pem");
+#endif
   CURLcode rc = curl_easy_perform(c);
   curl_easy_cleanup(c);
 
@@ -207,8 +208,9 @@ bool send_email(const std::string &bearer_token, const std::string &to,
   curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload.c_str());
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_cb);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, &resp);
-  // --- FIX: Point to the CA certificate bundle ---
-  // curl_easy_setopt(curl, CURLOPT_CAINFO, "cacert.pem");
+#ifdef WIN32
+  curl_easy_setopt(c, CURLOPT_CAINFO, "../cacert.pem");
+#endif
   CURLcode rc = curl_easy_perform(curl);
   long httpCode = 0;
   curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
@@ -283,8 +285,9 @@ bool send_email_with_attachment(const std::string &bearer_token,
   curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload.c_str());
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_cb);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, &resp);
-  // --- FIX: Point to the CA certificate bundle ---
-  //  curl_easy_setopt(curl, CURLOPT_CAINFO, "cacert.pem");
+#ifdef WIN32
+  curl_easy_setopt(c, CURLOPT_CAINFO, "../cacert.pem");
+#endif
   CURLcode rc = curl_easy_perform(curl);
   long httpCode = 0;
   curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
@@ -383,9 +386,10 @@ void mark_email_as_read(const std::string &bearer_token,
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_cb);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_string);
 
-  // CRITICAL: Ensure SSL verification is enabled
-  // curl_easy_setopt(curl, CURLOPT_CAINFO, "cacert.pem");
-
+// CRITICAL: Ensure SSL verification is enabled
+#ifdef WIN32
+  curl_easy_setopt(curl, CURLOPT_CAINFO, "cacert.pem");
+#endif
   CURLcode res = curl_easy_perform(curl);
   long http_code = get_http_code(curl);
 
@@ -433,6 +437,9 @@ bool read_latest_unread_email(const std::string &bearer_token,
     curl_easy_setopt(c, CURLOPT_WRITEFUNCTION, write_cb);
     curl_easy_setopt(c, CURLOPT_WRITEDATA, &listResp);
 
+#ifdef WIN32
+    curl_easy_setopt(c, CURLOPT_CAINFO, "../cacert.pem");
+#endif
     CURLcode res = curl_easy_perform(c);
     curl_slist_free_all(h);
     curl_easy_cleanup(c);
@@ -474,7 +481,9 @@ bool read_latest_unread_email(const std::string &bearer_token,
     curl_easy_setopt(c, CURLOPT_URL, url.c_str());
     curl_easy_setopt(c, CURLOPT_WRITEFUNCTION, write_cb);
     curl_easy_setopt(c, CURLOPT_WRITEDATA, &msgResp);
-
+#ifdef WIN32
+    curl_easy_setopt(curl, CURLOPT_CAINFO, "cacert.pem");
+#endif
     CURLcode res = curl_easy_perform(c);
     curl_slist_free_all(h);
     curl_easy_cleanup(c);
