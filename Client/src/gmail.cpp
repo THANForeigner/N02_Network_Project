@@ -575,7 +575,7 @@ bool GmailClient::ensureValidToken() {
   if (!token_box_->hasValidRefreshToken()) {
     std::cerr
         << "❌ No refresh token available. Please run interactive login.\n";
-    return false;
+    return RunInterativeLogin();
   }
 
   std::cout << "Attempting to refresh token...\n";
