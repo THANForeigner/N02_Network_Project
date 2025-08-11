@@ -2,7 +2,6 @@
 #include <filesystem>
 #include <iostream>
 const std::filesystem::path DESTINATION_DIR = "../data/copyfile";
-
 std::string CopyToPath(std::string baseFile)
 {
     std::filesystem::path sourcePath(baseFile);

@@ -31,7 +31,7 @@ int main() {
       break;
     client.ProcessCommand();
     std::this_thread::sleep_for(3s);
-    //Clear();
+    Clear();
     client.command.clear();
   }
   

@@ -32,14 +32,7 @@ public:
 
     std::string videoFilePath;
 
-    Server(std::string _port)
-    {
-        if (_port.empty())
-        {
-            port = PORT;
-        }
-        else port=_port;
-    }
+    Server(std::string _port);
     Server();
     void Init();
     bool WaitForConnection();

