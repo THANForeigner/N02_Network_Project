@@ -168,7 +168,7 @@ void Client::GetCommand()
         break;
 
       case 12: // EXIT
-        this->command = "TAKE_SCREEN_SHOT";
+        this->command = "TAKE_SCREENSHOT";
         std::cout << "Taking screenshot...\n";
         break;
 
@@ -189,7 +189,6 @@ void Client::GetCommand()
       GmailClient gmail;
       std::string check_IP;
       gmail.GetLatestEmailBody(check_IP, this->command, this->receiver);
-
       if (!this->command.empty() && check_IP == serverHost)
       {
         std::cout << "Valid command received via email: " << this->command << std::endl;
