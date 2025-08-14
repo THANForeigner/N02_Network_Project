@@ -1,8 +1,8 @@
 # ninja log v7
 37	5967	7765762128142680	CMakeFiles/NetworkProjectClient.dir/main.cpp.obj	c4275b5df6d0a467
-19	2282	7765835678464315	CMakeFiles/NetworkProjectClient.dir/src/client.cpp.obj	62a0dc372b74d59d
+5	1952	7765838348857405	CMakeFiles/NetworkProjectClient.dir/src/client.cpp.obj	62a0dc372b74d59d
 23	7134	7765056613842950	CMakeFiles/NetworkProjectClient.dir/src/gmail.cpp.obj	29462c7d47ff2cfb
-2283	2562	7765835701107838	NetworkProjectClient.exe	1662078afc998408
+1952	2180	7765838368330440	NetworkProjectClient.exe	1662078afc998408
 31	193	7763463050332187	lib/raylib/raylib/CMakeFiles/raylib.dir/utils.c.obj	a67fb3b6c009983a
 22	656	7763463050249604	lib/raylib/raylib/CMakeFiles/raylib.dir/rshapes.c.obj	d6cc1d754af9f65d
 25	1053	7763463050249604	lib/raylib/raylib/CMakeFiles/raylib.dir/rtext.c.obj	80141114d97b7eff
@@ -33,17 +33,15 @@
 14	5592	7763463050154345	lib/raylib/raylib/CMakeFiles/raylib.dir/raudio.c.obj	d991cde01a5801b8
 18	136	7763463340216511	lib/raylib/raylib/libraylib.a	e453d97a893c7761
 24	877	7764609268629993	CMakeFiles/NetworkProjectClient.dir/src/UI.cpp.obj	b928e7d57f4e8b3b
-17	502	7765836681081041	build.ninja	525f2214976bfe58
-17	502	7765836681061046	D:/1_Study/Project/Network_Project/Client/build/cmake_install.cmake	525f2214976bfe58
+17	502	7768417290391356	build.ninja	525f2214976bfe58
+17	502	7768417290391356	D:/1_Study/Project/Network_Project/Client/build/cmake_install.cmake	525f2214976bfe58
 17	502	7763470092964009	D:/1_Study/Project/Network_Project/Client/build/lib/raylib/cmake_install.cmake	525f2214976bfe58
 17	502	7763470092964009	D:/1_Study/Project/Network_Project/Client/build/lib/raylib/raylib/cmake_install.cmake	525f2214976bfe58
 17	502	7763470092964009	D:/1_Study/Project/Network_Project/Client/build/lib/raylib/raylib/external/glfw/cmake_install.cmake	525f2214976bfe58
 17	502	7763470092964009	D:/1_Study/Project/Network_Project/Client/build/lib/raylib/raylib/external/glfw/src/cmake_install.cmake	525f2214976bfe58
 17	502	7763470092964009	D:/1_Study/Project/Network_Project/Client/build/lib/raylib/CTestTestfile.cmake	525f2214976bfe58
 17	502	7763470092964009	D:/1_Study/Project/Network_Project/Client/build/lib/raylib/raylib/CTestTestfile.cmake	525f2214976bfe58
-20	2057	7765836777494894	CMakeFiles/NetworkProjectClient.dir/src/client.cpp.obj	62a0dc372b74d59d
-2057	2297	7765836797877409	NetworkProjectClient.exe	1662078afc998408
-5	1944	7765837251656034	CMakeFiles/NetworkProjectClient.dir/src/client.cpp.obj	62a0dc372b74d59d
-1944	2176	7765837271044404	NetworkProjectClient.exe	1662078afc998408
-5	1952	7765838348857405	CMakeFiles/NetworkProjectClient.dir/src/client.cpp.obj	62a0dc372b74d59d
-1952	2180	7765838368330440	NetworkProjectClient.exe	1662078afc998408
+18	1830	7768417704578573	CMakeFiles/NetworkProjectClient.dir/main.cpp.obj	c4275b5df6d0a467
+21	2125	7768417704578573	CMakeFiles/NetworkProjectClient.dir/src/client.cpp.obj	62a0dc372b74d59d
+24	4706	7768417704578573	CMakeFiles/NetworkProjectClient.dir/src/gmail.cpp.obj	29462c7d47ff2cfb
+4707	5139	7768417751409775	NetworkProjectClient.exe	1662078afc998408

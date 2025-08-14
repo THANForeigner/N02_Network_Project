@@ -15,14 +15,16 @@ using json = nlohmann::json;
 // ───────────────────────── Helper routines ────────────────────────────
 
 // Curl write‑callback → appends server response into std::string
-static size_t write_cb(char *ptr, size_t size, size_t nm, void *userdata) {
+static size_t write_cb(char *ptr, size_t size, size_t nm, void *userdata)
+{
   auto &buf = *static_cast<std::string *>(userdata);
   buf.append(ptr, size * nm);
   return size * nm;
 }
 
 // URL‑encode convenience wrapper around curl_easy_escape
-static std::string urlencode(const std::string &s) {
+static std::string urlencode(const std::string &s)
+{
   char *tmp = curl_easy_escape(nullptr, s.c_str(), 0);
   std::string out(tmp);
   curl_free(tmp);
@@ -30,7 +32,8 @@ static std::string urlencode(const std::string &s) {
 }
 
 // Thin wrapper for HTTP POST that returns parsed JSON response
-static json http_post(const std::string &url, const std::string &body) {
+static json http_post(const std::string &url, const std::string &body)
+{
   CURL *c = curl_easy_init();
   std::string resp;
 
@@ -54,7 +57,8 @@ static json http_post(const std::string &url, const std::string &body) {
 }
 
 // Minimal RFC‑4648 base64url encoder (no padding) — good enough for Gmail API
-static std::string b64url(const std::string &in) {
+static std::string b64url(const std::string &in)
+{
   static const std::string b64_url_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                            "abcdefghijklmnopqrstuvwxyz"
                                            "0123456789-_";
@@ -66,7 +70,8 @@ static std::string b64url(const std::string &in) {
   const char *bytes_to_encode = in.c_str();
 
   // Process 3-byte chunks
-  while (i < in.length() - (in.length() % 3)) {
+  while (i < in.length() - (in.length() % 3))
+  {
     unsigned char byte1 = bytes_to_encode[i++];
     unsigned char byte2 = bytes_to_encode[i++];
     unsigned char byte3 = bytes_to_encode[i++];
@@ -78,11 +83,14 @@ static std::string b64url(const std::string &in) {
   }
 
   // Handle the remaining 1 or 2 bytes
-  if (in.length() % 3 == 1) {
+  if (in.length() % 3 == 1)
+  {
     unsigned char byte1 = bytes_to_encode[i++];
     out.push_back(b64_url_chars[(byte1 & 0xfc) >> 2]);
     out.push_back(b64_url_chars[(byte1 & 0x03) << 4]);
-  } else if (in.length() % 3 == 2) {
+  }
+  else if (in.length() % 3 == 2)
+  {
     unsigned char byte1 = bytes_to_encode[i++];
     unsigned char byte2 = bytes_to_encode[i++];
     out.push_back(b64_url_chars[(byte1 & 0xfc) >> 2]);
@@ -93,30 +101,36 @@ static std::string b64url(const std::string &in) {
   return out;
 }
 
-static std::string base64_encode(const std::string &in) {
+static std::string base64_encode(const std::string &in)
+{
   std::string out;
   const std::string b64_chars =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
   int val = 0, valb = -6;
-  for (unsigned char c : in) {
+  for (unsigned char c : in)
+  {
     val = (val << 8) + c;
     valb += 8;
-    while (valb >= 0) {
+    while (valb >= 0)
+    {
       out.push_back(b64_chars[(val >> valb) & 0x3F]);
       valb -= 6;
     }
   }
-  if (valb > -6) {
+  if (valb > -6)
+  {
     out.push_back(b64_chars[((val << 8) >> (valb + 8)) & 0x3F]);
   }
-  while (out.size() % 4) {
+  while (out.size() % 4)
+  {
     out.push_back('=');
   }
   return out;
 }
 // Helper function to base64-encode a file (used for attachments)
-static std::string base64url_encode(const std::string &in) {
+static std::string base64url_encode(const std::string &in)
+{
   // 1. Get standard Base64
   std::string b64 = b64url(in);
 
@@ -126,15 +140,18 @@ static std::string base64url_encode(const std::string &in) {
 
   // 3. Remove padding
   size_t pad_pos = b64.find('=');
-  if (pad_pos != std::string::npos) {
+  if (pad_pos != std::string::npos)
+  {
     b64.erase(pad_pos);
   }
 
   return b64;
 }
-static std::string encode_file(const std::string &file_path) {
+static std::string encode_file(const std::string &file_path)
+{
   std::ifstream file(file_path, std::ios::binary);
-  if (!file) {
+  if (!file)
+  {
     std::cerr << "Error opening file: " << file_path << std::endl;
     return "";
   }
@@ -143,7 +160,8 @@ static std::string encode_file(const std::string &file_path) {
   return base64_encode(ss.str());
 }
 // Portable "best‑effort" attempt to open default browser
-static bool open_browser(const std::string &url) {
+static bool open_browser(const std::string &url)
+{
 #ifdef _WIN32
   std::string cmd = "start \"\" \"" + url + "\"";
 #elif defined(__APPLE__)
@@ -157,19 +175,22 @@ static bool open_browser(const std::string &url) {
 // ───────────────────────── Token container ────────────────────────────
 // Stores access / refresh tokens and their absolute expiry time
 // Provides JSON (de)serialise helpers so we can save to token.json
-struct TokenBox {
+struct TokenBox
+{
   std::string access_token;
   std::string refresh_token;
   std::chrono::steady_clock::time_point expire_at;
 
   bool hasValidRefreshToken() const { return !refresh_token.empty(); }
-  bool isAccessTokenExpired() const {
+  bool isAccessTokenExpired() const
+  {
     return access_token.empty() ||
            std::chrono::steady_clock::now() >= expire_at;
   }
 
   // convert to JSON for persistence
-  json dump() const {
+  json dump() const
+  {
     return {{"access_token", access_token},
             {"refresh_token", refresh_token},
             {"expire_at", std::chrono::duration_cast<std::chrono::seconds>(
@@ -177,7 +198,8 @@ struct TokenBox {
                               .count()}};
   }
   // construct from JSON (if token.json exists)
-  static TokenBox load(const json &j) {
+  static TokenBox load(const json &j)
+  {
     TokenBox t;
     t.access_token = j.value("access_token", "");
     t.refresh_token = j.value("refresh_token", "");
@@ -191,7 +213,8 @@ struct TokenBox {
 // Refreshes the access_token using the long‑lived refresh_token
 // Returns true on success, false on fatal error (e.g. token revoked)
 static bool refresh(TokenBox &tok, const std::string &client_id,
-                    const std::string &client_secret) {
+                    const std::string &client_secret)
+{
   if (tok.refresh_token.empty())
     return false; // nothing to refresh with
 
@@ -201,7 +224,8 @@ static bool refresh(TokenBox &tok, const std::string &client_id,
                      "&grant_type=refresh_token";
 
   auto j = http_post("https://oauth2.googleapis.com/token", body);
-  if (!j.contains("access_token")) {
+  if (!j.contains("access_token"))
+  {
     std::cerr << "refresh failed " << j.dump() << "\n";
     return false;
   }
@@ -211,7 +235,7 @@ static bool refresh(TokenBox &tok, const std::string &client_id,
   tok.expire_at =
       std::chrono::steady_clock::now() +
       std::chrono::seconds(j["expires_in"].get<int>() - 60); // 60 s grace
-  if (j.contains("refresh_token")) // Google may return new refresh_token
+  if (j.contains("refresh_token"))                           // Google may return new refresh_token
     tok.refresh_token = j["refresh_token"];
 
   // Persist to disk
@@ -233,7 +257,8 @@ static bool refresh(TokenBox &tok, const std::string &client_id,
 // Returns:  true  on HTTP 200..299,  false otherwise.
 // -----------------------------------------------------------------------------
 bool send_email(const std::string &bearer_token, const std::string &to,
-                const std::string &subject, const std::string &bodyText) {
+                const std::string &subject, const std::string &bodyText)
+{
   // ---- 1. build MIME string ------------------------------------------------
   std::string mime = "To: " + to +
                      "\r\n"
@@ -276,11 +301,13 @@ bool send_email(const std::string &bearer_token, const std::string &to,
   curl_slist_free_all(hdrs);
   curl_easy_cleanup(curl);
 
-  if (rc != CURLE_OK) {
+  if (rc != CURLE_OK)
+  {
     std::cerr << "curl error: " << curl_easy_strerror(rc) << "\n";
     return false;
   }
-  if (httpCode < 200 || httpCode >= 300) {
+  if (httpCode < 200 || httpCode >= 300)
+  {
     std::cerr << "Gmail returned HTTP " << httpCode << " → " << resp << "\n";
     return false;
   }
@@ -292,16 +319,19 @@ bool send_email_with_attachment(const std::string &bearer_token,
                                 const std::string &to,
                                 const std::string &subject,
                                 const std::string &bodyText,
-                                const std::string &file_path) {
+                                const std::string &file_path)
+{
   // 1. Read the file and Base64 encode it (standard Base64)
   std::filesystem::path filepath(file_path);
-  if (!std::filesystem::exists(filepath)) {
+  if (!std::filesystem::exists(filepath))
+  {
     std::cerr << "Error: File not found at " << file_path << "\n";
     return false;
   }
   std::string filename = filepath.filename().string();
   std::string encoded_file = encode_file(file_path);
-  if (encoded_file.empty()) {
+  if (encoded_file.empty())
+  {
     std::cerr << "Error: Failed to read or encode file.\n";
     return false;
   }
@@ -336,7 +366,8 @@ bool send_email_with_attachment(const std::string &bearer_token,
 
   // 3. The Gmail API requires the entire raw message to be base64url encoded.
   std::string base64url_encoded_mime = base64url_encode(mime_message);
-  if (base64url_encoded_mime.empty()) {
+  if (base64url_encoded_mime.empty())
+  {
     std::cerr << "Error: Failed to base64url encode the MIME message.\n";
     return false;
   }
@@ -345,7 +376,8 @@ bool send_email_with_attachment(const std::string &bearer_token,
   std::string json_payload = "{\"raw\":\"" + base64url_encoded_mime + "\"}";
 
   CURL *curl = curl_easy_init();
-  if (!curl) {
+  if (!curl)
+  {
     std::cerr << "Error: curl_easy_init() failed.\n";
     return false;
   }
@@ -384,12 +416,14 @@ bool send_email_with_attachment(const std::string &bearer_token,
   curl_slist_free_all(headers);
   curl_easy_cleanup(curl);
 
-  if (res != CURLE_OK) {
+  if (res != CURLE_OK)
+  {
     std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res)
               << "\n";
     return false;
   }
-  if (http_code < 200 || http_code >= 300) {
+  if (http_code < 200 || http_code >= 300)
+  {
     std::cerr << "Gmail API Error: HTTP " << http_code
               << " Response: " << response_string << "\n";
     return false;
@@ -403,7 +437,8 @@ bool send_email_with_attachment(const std::string &bearer_token,
 //
 // Returns true if a message was fetched and decoded, false on error.
 // -----------------------------------------------------------------------------
-static std::string decode_b64url(std::string s) {
+static std::string decode_b64url(std::string s)
+{
   for (char &c : s) // convert URL-safe chars -> standard chars
     if (c == '-')
       c = '+';
@@ -417,8 +452,8 @@ static std::string decode_b64url(std::string s) {
       -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, -1, -1, 63,
-      52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -1, -1, -1, 0,  -1, -1,
-      -1, 0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14,
+      52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -1, -1, -1, 0, -1, -1,
+      -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
       15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, -1, -1, -1, -1, -1,
       -1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
       41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, -1, -1, -1, -1, -1,
@@ -428,12 +463,14 @@ static std::string decode_b64url(std::string s) {
   out.reserve(s.size() * 3 / 4);
 
   int val = 0, valb = -8;
-  for (unsigned char c : s) {
+  for (unsigned char c : s)
+  {
     if (T[c] == -1)
       break;
     val = (val << 6) + T[c];
     valb += 6;
-    if (valb >= 0) {
+    if (valb >= 0)
+    {
       out.push_back(char((val >> valb) & 0xFF));
       valb -= 8;
     }
@@ -441,7 +478,8 @@ static std::string decode_b64url(std::string s) {
   return out;
 }
 // Helper function to get the HTTP response code from a curl handle
-static long get_http_code(CURL *curl) {
+static long get_http_code(CURL *curl)
+{
   long http_code = 0;
   // Use CURLINFO_RESPONSE_CODE for the primary HTTP status
   curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
@@ -450,13 +488,16 @@ static long get_http_code(CURL *curl) {
 
 // "Bulletproof" version of the function for debugging
 void mark_email_as_read(const std::string &bearer_token,
-                        const std::string &msgId) {
-  if (msgId.empty()) {
+                        const std::string &msgId)
+{
+  if (msgId.empty())
+  {
     return;
   }
 
   CURL *curl = curl_easy_init();
-  if (!curl) {
+  if (!curl)
+  {
     std::cerr << "[FATAL] Failed to initialize curl." << std::endl;
     return;
   }
@@ -484,16 +525,21 @@ void mark_email_as_read(const std::string &bearer_token,
   CURLcode res = curl_easy_perform(curl);
   long http_code = get_http_code(curl);
 
-  if (res != CURLE_OK) {
+  if (res != CURLE_OK)
+  {
     // This is a curl-level error (e.g., can't connect, SSL problem)
     std::cerr << "[ERROR] curl_easy_perform() failed: "
               << curl_easy_strerror(res) << std::endl;
-  } else if (http_code >= 300) {
+  }
+  else if (http_code >= 300)
+  {
     // The API request was sent, but Google returned an error
     std::cerr << "[ERROR] Gmail API returned HTTP " << http_code << "."
               << std::endl;
     std::cerr << "[ERROR] Server Response: " << response_string << std::endl;
-  } else {
+  }
+  else
+  {
     // Success!
     // std::cout << "[SUCCESS] Gmail API returned HTTP " << http_code
     //          << ". Message marked as read." << std::endl;
@@ -506,7 +552,8 @@ void mark_email_as_read(const std::string &bearer_token,
 // --- Reads the single latest unread email ---
 bool read_latest_unread_email(const std::string &bearer_token,
                               std::string &mailhead, std::string &mailBody,
-                              std::string &receiver) {
+                              std::string &receiver)
+{
   std::string listResp;
   std::string msgId;
 
@@ -535,22 +582,27 @@ bool read_latest_unread_email(const std::string &bearer_token,
     curl_slist_free_all(h);
     curl_easy_cleanup(c);
 
-    if (res != CURLE_OK) {
+    if (res != CURLE_OK)
+    {
       std::cerr << "Failed to list messages: " << curl_easy_strerror(res)
                 << std::endl;
       return false;
     }
   }
 
-  try {
+  try
+  {
     auto jList = nlohmann::json::parse(listResp);
     // If "messages" is not found or is empty, there are no new emails.
-    if (!jList.contains("messages") || jList["messages"].empty()) {
+    if (!jList.contains("messages") || jList["messages"].empty())
+    {
       // This is normal behavior when there are no unread emails.
       return false;
     }
     msgId = jList["messages"][0]["id"];
-  } catch (const nlohmann::json::parse_error &e) {
+  }
+  catch (const nlohmann::json::parse_error &e)
+  {
     std::cerr << "JSON parse error (list messages): " << e.what() << std::endl;
     return false;
   }
@@ -579,7 +631,8 @@ bool read_latest_unread_email(const std::string &bearer_token,
     curl_slist_free_all(h);
     curl_easy_cleanup(c);
 
-    if (res != CURLE_OK) {
+    if (res != CURLE_OK)
+    {
       std::cerr << "Failed to get message details: " << curl_easy_strerror(res)
                 << std::endl;
       return false;
@@ -587,10 +640,12 @@ bool read_latest_unread_email(const std::string &bearer_token,
   }
 
   // 3) Extract data and body from the message
-  try {
+  try
+  {
     auto jMsg = nlohmann::json::parse(msgResp);
     std::string subject, from_address;
-    for (const auto &h : jMsg["payload"]["headers"]) {
+    for (const auto &h : jMsg["payload"]["headers"])
+    {
       if (h["name"] == "Subject")
         subject = h["value"];
       else if (h["name"] == "From")
@@ -602,25 +657,33 @@ bool read_latest_unread_email(const std::string &bearer_token,
 
     std::string data;
     const auto &payload = jMsg["payload"];
-    if (payload.contains("parts")) {
-      for (const auto &p : payload["parts"]) {
+    if (payload.contains("parts"))
+    {
+      for (const auto &p : payload["parts"])
+      {
         if (p["mimeType"] == "text/plain" && p.contains("body") &&
-            p["body"].contains("data")) {
+            p["body"].contains("data"))
+        {
           data = p["body"]["data"];
           break;
         }
       }
-    } else if (payload.contains("body") && payload["body"].contains("data")) {
+    }
+    else if (payload.contains("body") && payload["body"].contains("data"))
+    {
       data = payload["body"]["data"];
     }
 
-    if (data.empty()) {
+    if (data.empty())
+    {
       // std::cerr << "No plain text part found in the email.\n";
       return false;
     }
 
     mailBody = decode_b64url(data); // Assumes you have this function
-  } catch (const nlohmann::json::parse_error &e) {
+  }
+  catch (const nlohmann::json::parse_error &e)
+  {
     std::cerr << "JSON parse error (message details): " << e.what()
               << std::endl;
     return false;
@@ -632,46 +695,60 @@ bool read_latest_unread_email(const std::string &bearer_token,
   return true;
 }
 
-GmailClient::GmailClient() {
+GmailClient::GmailClient()
+{
   curl_global_init(CURL_GLOBAL_DEFAULT);
 
   std::ifstream fs("../client_secret.json");
-  if (!fs) {
+  if (!fs)
+  {
     throw std::runtime_error("FATAL: client_secret.json not found.");
   }
-  try {
+  try
+  {
     json secret = json::parse(fs);
     client_id_ = secret["installed"]["client_id"];
     client_secret_ = secret["installed"]["client_secret"];
-  } catch (const json::exception &e) {
+  }
+  catch (const json::exception &e)
+  {
     throw std::runtime_error("FATAL: Could not parse client_secret.json: " +
                              std::string(e.what()));
   }
 
   token_box_ = std::make_unique<TokenBox>();
   std::ifstream ft("../token.json");
-  if (ft) {
-    try {
+  if (ft)
+  {
+    try
+    {
       *token_box_ = TokenBox::load(json::parse(ft));
       // std::cout << "🔑 Token loaded from token.json\n";
-    } catch (...) {
+    }
+    catch (...)
+    {
       // std::cerr
       //     << "⚠️ Could not parse token.json. A new login may be required.\n";
     }
-  } else {
+  }
+  else
+  {
     RunInteractiveLogin();
   }
 }
 
 GmailClient::~GmailClient() { curl_global_cleanup(); }
 
-bool GmailClient::ensureValidToken() {
-  if (!token_box_->isAccessTokenExpired()) {
+bool GmailClient::ensureValidToken()
+{
+  if (!token_box_->isAccessTokenExpired())
+  {
     return true; // Token is fresh, nothing to do.
   }
 
   std::cout << "Access token has expired.\n";
-  if (!token_box_->hasValidRefreshToken()) {
+  if (!token_box_->hasValidRefreshToken())
+  {
     std::cerr
         << "❌ No refresh token available. Please run interactive login.\n";
     return RunInteractiveLogin();
@@ -681,7 +758,8 @@ bool GmailClient::ensureValidToken() {
   return refresh(*token_box_, client_id_, client_secret_);
 }
 
-bool GmailClient::RunInteractiveLogin() {
+bool GmailClient::RunInteractiveLogin()
+{
   const std::string redirect = "urn:ietf:wg:oauth:2.0:oob";
   // CORRECTED - FULL SCOPE
   const std::string scope = "https://www.googleapis.com/auth/gmail.modify "
@@ -711,14 +789,17 @@ bool GmailClient::RunInteractiveLogin() {
       "code=" + urlencode(code) + "&client_id=" + urlencode(client_id_) +
       "&client_secret=" + urlencode(client_secret_) +
       "&redirect_uri=" + urlencode(redirect) + "&grant_type=authorization_code";
-  try {
+  try
+  {
     auto j = http_post("https://oauth2.googleapis.com/token", body);
-    if (!j.contains("access_token")) {
+    if (!j.contains("access_token"))
+    {
       std::cerr << "❌ Authorization failed: " << j.dump(2) << "\n";
       return false;
     }
     token_box_->access_token = j["access_token"];
-    if (j.contains("refresh_token")) { // This is crucial
+    if (j.contains("refresh_token"))
+    { // This is crucial
       token_box_->refresh_token = j["refresh_token"];
     }
     token_box_->expire_at =
@@ -728,15 +809,19 @@ bool GmailClient::RunInteractiveLogin() {
     std::ofstream("../token.json") << token_box_->dump().dump(2);
     std::cout << "✅ Tokens saved successfully to token.json\n";
     return true;
-  } catch (const std::exception &e) {
+  }
+  catch (const std::exception &e)
+  {
     std::cerr << "❌ Error during token exchange: " << e.what() << "\n";
     return false;
   }
 }
 
 bool GmailClient::SendEmail(const std::string &to, const std::string &subject,
-                            const std::string &body) {
-  if (!ensureValidToken()) {
+                            const std::string &body)
+{
+  if (!ensureValidToken())
+  {
     return false;
   }
   return send_email(token_box_->access_token, to, subject, body);
@@ -745,8 +830,10 @@ bool GmailClient::SendEmail(const std::string &to, const std::string &subject,
 bool GmailClient::SendEmailAttachment(const std::string &to,
                                       const std::string &subject,
                                       const std::string &body,
-                                      const std::string &attachment_path) {
-  if (!ensureValidToken()) {
+                                      const std::string &attachment_path)
+{
+  if (!ensureValidToken())
+  {
     return false;
   }
   return send_email_with_attachment(token_box_->access_token, to, subject, body,
@@ -754,8 +841,10 @@ bool GmailClient::SendEmailAttachment(const std::string &to,
 }
 bool GmailClient::GetLatestEmailBody(std::string &out_head,
                                      std::string &out_body,
-                                     std::string &receiver) {
-  if (!ensureValidToken()) {
+                                     std::string &receiver)
+{
+  if (!ensureValidToken())
+  {
     return false;
   }
   return read_latest_unread_email(token_box_->access_token, out_head, out_body,
@@ -763,15 +852,18 @@ bool GmailClient::GetLatestEmailBody(std::string &out_head,
 }
 
 std::string
-GmailClient::UploadToDriveAndGetShareableLink(const std::string &file_path) {
-  if (!ensureValidToken()) {
+GmailClient::UploadToDriveAndGetShareableLink(const std::string &file_path)
+{
+  if (!ensureValidToken())
+  {
     std::cerr << "Error: Cannot upload to Drive without a valid token.\n";
     return "";
   }
 
   // 1. Check if file exists and read its content
   std::ifstream file_stream(file_path, std::ios::binary);
-  if (!file_stream) {
+  if (!file_stream)
+  {
     std::cerr << "Error opening file for upload: " << file_path << std::endl;
     return "";
   }
@@ -836,20 +928,24 @@ GmailClient::UploadToDriveAndGetShareableLink(const std::string &file_path) {
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
     curl_slist_free_all(headers);
 
-    if (res != CURLE_OK || http_code >= 300) {
+    if (res != CURLE_OK || http_code >= 300)
+    {
       std::cerr << "Google Drive upload failed. HTTP " << http_code
                 << "\nResponse: " << upload_response << std::endl;
       curl_easy_cleanup(curl);
       return "";
     }
 
-    try {
+    try
+    {
       json j = json::parse(upload_response);
 
       // First, check if the API returned an error object
-      if (j.contains("error")) {
+      if (j.contains("error"))
+      {
         std::string error_message = "Unknown API error";
-        if (j["error"].contains("message")) {
+        if (j["error"].contains("message"))
+        {
           error_message = j["error"]["message"];
         }
         std::cerr << "Google Drive API returned an error: " << error_message
@@ -859,7 +955,8 @@ GmailClient::UploadToDriveAndGetShareableLink(const std::string &file_path) {
       }
 
       // Now, safely check for the fields we need
-      if (!j.contains("id") || !j.contains("webViewLink")) {
+      if (!j.contains("id") || !j.contains("webViewLink"))
+      {
         std::cerr
             << "Error: Drive API response is missing 'id' or 'webViewLink'."
             << std::endl;
@@ -874,7 +971,9 @@ GmailClient::UploadToDriveAndGetShareableLink(const std::string &file_path) {
       web_link = j.at("webViewLink").get<std::string>();
       std::cout << "File uploaded successfully. File ID: " << file_id
                 << std::endl;
-    } catch (const json::exception &e) {
+    }
+    catch (const json::exception &e)
+    {
       std::cerr << "Error parsing Drive upload response: " << e.what()
                 << std::endl;
       std::cerr << "Raw Response: " << upload_response
@@ -885,7 +984,8 @@ GmailClient::UploadToDriveAndGetShareableLink(const std::string &file_path) {
   }
 
   // --- Part B: Set permissions to make the file publicly readable ---
-  if (!file_id.empty()) {
+  if (!file_id.empty())
+  {
     std::cout << "Setting public permissions for the file..." << std::endl;
     curl_easy_reset(curl); // Reset curl handle for the next request
 
@@ -914,7 +1014,8 @@ GmailClient::UploadToDriveAndGetShareableLink(const std::string &file_path) {
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
     curl_slist_free_all(headers);
 
-    if (res != CURLE_OK || http_code >= 300) {
+    if (res != CURLE_OK || http_code >= 300)
+    {
       std::cerr << "Failed to set Drive permissions. HTTP " << http_code
                 << "\nResponse: " << perm_response << std::endl;
       curl_easy_cleanup(curl);
@@ -929,57 +1030,48 @@ GmailClient::UploadToDriveAndGetShareableLink(const std::string &file_path) {
 }
 
 void GmailClient::SendVideoThroughEmail(const std::string &receiver,
-                                        const std::string &videoPath) {
-  if (!std::filesystem::exists(videoPath)) {
+                                        const std::string &videoPath)
+{
+  if (!std::filesystem::exists(videoPath))
+  {
     std::cerr << "Error: Video file not found at " << videoPath << std::endl;
     SendEmail(receiver, "VIDEO_REQUEST_FAILED",
               "Sorry, the requested video could not be found.");
     return;
   }
 
-  try {
+  try
+  {
     uintmax_t fileSize = std::filesystem::file_size(videoPath);
     std::string filename = std::filesystem::path(videoPath).filename().string();
+    // Use the new method to upload and get a link
+    std::string shareableLink = UploadToDriveAndGetShareableLink(videoPath);
 
-    if (fileSize > MAX_ATTACHMENT_SIZE_BYTES) {
-      std::cout << "Video is >25MB. Uploading to Google Drive..." << std::endl;
+    if (!shareableLink.empty())
+    {
+      std::string subject = "Link to Your Video: " + filename;
+      std::string body =
+          "The video you requested was too large to attach.\n\n"
+          "You can view or download it from Google Drive using the link "
+          "below:\n\n" +
+          shareableLink;
 
-      // Use the new method to upload and get a link
-      std::string shareableLink = UploadToDriveAndGetShareableLink(videoPath);
-
-      if (!shareableLink.empty()) {
-        std::string subject = "Link to Your Video: " + filename;
-        std::string body =
-            "The video you requested was too large to attach.\n\n"
-            "You can view or download it from Google Drive using the link "
-            "below:\n\n" +
-            shareableLink;
-
-        SendEmail(receiver, subject, body);
-        std::cout << "Successfully sent email with Google Drive link."
-                  << std::endl;
-      } else {
-        std::cerr
-            << "Failed to upload to Google Drive. Sending failure notification."
-            << std::endl;
-        SendEmail(receiver, "VIDEO_REQUEST_FAILED",
-                  "Sorry, there was an error processing your large video file. "
-                  "The upload failed.");
-      }
-    } else {
-      std::cout << "Video is small enough. Sending as a direct attachment..."
+      SendEmail(receiver, subject, body);
+      std::cout << "Successfully sent email with Google Drive link."
                 << std::endl;
-      std::string subject = "Your Video: " + filename;
-      std::string body = "Please find the requested video file attached.";
-
-      if (SendEmailAttachment(receiver, subject, body, videoPath)) {
-        std::cout << "Successfully sent email with video attachment."
-                  << std::endl;
-      } else {
-        std::cout << "Failed to send email with attachment." << std::endl;
-      }
     }
-  } catch (const std::filesystem::filesystem_error &e) {
+    else
+    {
+      std::cerr
+          << "Failed to upload to Google Drive. Sending failure notification."
+          << std::endl;
+      SendEmail(receiver, "VIDEO_REQUEST_FAILED",
+                "Sorry, there was an error processing your large video file. "
+                "The upload failed.");
+    }
+  }
+  catch (const std::filesystem::filesystem_error &e)
+  {
     std::cerr << "Filesystem error: " << e.what() << std::endl;
   }
 }
