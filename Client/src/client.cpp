@@ -84,7 +84,7 @@ void Client::GetCommand()
 {
   using namespace std::chrono_literals;
   auto lastEmailCheck = std::chrono::steady_clock::now();
-  const auto emailCheckInterval = 5s;
+  const auto emailCheckInterval = 3s;
   while (true)
   {
     if (isKeyboardHit())
