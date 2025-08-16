@@ -227,8 +227,7 @@ void Server::SendResult(const std::string path)
     }
 
     std::streamsize file_size = file.tellg();
-    file.seekg(0, std::ios::beg);
-
+    file.seekg(0, std::ios::beg); // lấy kích thước file
     fs::path full_path(path);
     std::string filename_only = full_path.filename().string();
     std::string path_header = "PATH:" + filename_only + "\n";

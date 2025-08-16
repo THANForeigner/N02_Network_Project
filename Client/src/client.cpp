@@ -18,7 +18,6 @@ bool isKeyboardHit()
 #ifdef _WIN32
   return _kbhit();
 #else
-  // The Linux/macOS code does not need to change at all.
   struct timeval tv;
   fd_set fds;
   tv.tv_sec = 0;
@@ -390,12 +389,6 @@ void Client::ReceiveFile(std::string pathFolder)
               << " of " << file_size << " bytes." << std::endl;
   }
 }
-
-// void Client::sendFile(std::string pathFile)
-// {
-//   GmailClient gmail;
-//   gmail.SendEmailAttachment("");
-// }
 
 void Client::Shutdown()
 {

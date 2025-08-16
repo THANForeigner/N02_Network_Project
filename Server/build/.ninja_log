@@ -1,15 +1,17 @@
 # ninja log v7
-10	3618	7765784596673551	CMakeFiles/NetworkProjectServer.dir/main.cpp.obj	dc0d7029c54719a4
+38	3926	7770340851142043	CMakeFiles/NetworkProjectServer.dir/main.cpp.obj	dc0d7029c54719a4
 12	1376	7765780054888288	CMakeFiles/NetworkProjectServer.dir/src/copyfile.cpp.obj	7a5382a44ee12abb
 32	1756	7764255827894457	CMakeFiles/NetworkProjectServer.dir/src/command_handler.cpp.obj	afb26d7122598adf
 27	1729	7764255827784661	CMakeFiles/NetworkProjectServer.dir/src/PowerRelatedFunction.cpp.obj	11f3e9f912b46b06
 39	1823	7764255827963266	CMakeFiles/NetworkProjectServer.dir/src/process_manager.cpp.obj	37eec21ad9281913
-17	2725	7765780054953743	CMakeFiles/NetworkProjectServer.dir/src/keylogger.cpp.obj	366b565e75428f5c
-4092	4529	7765784637540991	NetworkProjectServer.exe	702046c8e25d6eff
-16	4092	7765784596754602	CMakeFiles/NetworkProjectServer.dir/src/server.cpp.obj	b7d1871c01db3063
-30	2769	7764255827864456	CMakeFiles/NetworkProjectServer.dir/src/WebcamRecorder.cpp.obj	3cb567347edbbb0a
-38	417	7765834238291788	build.ninja	9e95985efd5eda3a
-38	417	7765834238271790	D:/1_Study/Project/Network_Project/Server/build/cmake_install.cmake	9e95985efd5eda3a
-22	4020	7765780054953743	CMakeFiles/NetworkProjectServer.dir/src/screenshot.cpp.obj	9c69cd6aca51ec9d
 36	2414	7768362864008329	CMakeFiles/NetworkProjectServer.dir/src/keylogger.cpp.obj	366b565e75428f5c
-2414	2884	7768362887797474	NetworkProjectServer.exe	702046c8e25d6eff
+4278	9165	7770340893546960	NetworkProjectServer.exe	702046c8e25d6eff
+42	4278	7770340851186610	CMakeFiles/NetworkProjectServer.dir/src/server.cpp.obj	b7d1871c01db3063
+30	2769	7764255827864456	CMakeFiles/NetworkProjectServer.dir/src/WebcamRecorder.cpp.obj	3cb567347edbbb0a
+38	417	7770359352738564	build.ninja	9e95985efd5eda3a
+38	417	7770359352723520	D:/1_Study/Project/Network_Project/Server/build/cmake_install.cmake	9e95985efd5eda3a
+22	4020	7765780054953743	CMakeFiles/NetworkProjectServer.dir/src/screenshot.cpp.obj	9c69cd6aca51ec9d
+23	1469	7770362754152229	CMakeFiles/NetworkProjectServer.dir/src/keylogger.cpp.obj	366b565e75428f5c
+1470	1773	7770362768614940	NetworkProjectServer.exe	702046c8e25d6eff
+11	662	7770363389293265	CMakeFiles/NetworkProjectServer.dir/src/copyfile.cpp.obj	7a5382a44ee12abb
+663	957	7770363395821578	NetworkProjectServer.exe	702046c8e25d6eff

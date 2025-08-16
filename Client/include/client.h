@@ -26,19 +26,20 @@ public:
       };
   */
   Client() {};
-  std::string port;
-  std::string serverHost;
-  WSADATA wsaData;
-  SOCKET connSock = INVALID_SOCKET;
+  std::string port; //Port kết nối với Server
+  std::string serverHost; //Socket giao tiếp với Server
+  WSADATA wsaData; 
+  SOCKET connSock = INVALID_SOCKET; //Socket giao tiếp với Server 
   struct addrinfo hints{}, *res = nullptr;
+  // hints sử cung để lưu thông tin Socket 
+  // res dùng để trỏ tới dang sách kết quả địa chỉ sau khi gọi hàm getaddrinfo() 
+  std::string command; //Lệnh gửi qua Server
+  bool fromEmail=0; //Flag kiểm tra lệnh nhận từ mail hay console
+  std::string receiver; //Người nhận mail
+  std::string filename; //Tên file
 
-  std::string command;
-  bool fromEmail=0;
-  std::string receiver;
-  std::string filename;
-
-  const char *PORT = "27015";
-  const int BUFSIZE = 512;
+  const char *PORT = "27015"; //Port mặc định
+  const int BUFSIZE = 512; //Size tối đa của command mặc định
 
   bool Init(std::string hostIP, std::string port);
   void GetCommand();
