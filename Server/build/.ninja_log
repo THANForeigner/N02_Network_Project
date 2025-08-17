@@ -8,6 +8,8 @@
 663	957	7770363395821578	NetworkProjectServer.exe	702046c8e25d6eff
 42	4278	7770340851186610	CMakeFiles/NetworkProjectServer.dir/src/server.cpp.obj	b7d1871c01db3063
 30	2769	7764255827864456	CMakeFiles/NetworkProjectServer.dir/src/WebcamRecorder.cpp.obj	3cb567347edbbb0a
-38	417	7770542107764921	build.ninja	9e95985efd5eda3a
-38	417	7770542107744995	D:/1_Study/Project/Network_Project/Server/build/cmake_install.cmake	9e95985efd5eda3a
+38	417	7771223815456804	build.ninja	9e95985efd5eda3a
+38	417	7771223815449665	D:/1_Study/Project/Network_Project/Server/build/cmake_install.cmake	9e95985efd5eda3a
 22	4020	7765780054953743	CMakeFiles/NetworkProjectServer.dir/src/screenshot.cpp.obj	9c69cd6aca51ec9d
+22	1718	7771224044018247	CMakeFiles/NetworkProjectServer.dir/src/PowerRelatedFunction.cpp.obj	11f3e9f912b46b06
+1719	6030	7771224061026682	NetworkProjectServer.exe	702046c8e25d6eff
