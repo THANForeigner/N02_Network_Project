@@ -1,5 +1,6 @@
 #include "PowerRelatedFunction.h"
 
+//Cấp quyền tắt máy
 bool EnableShutdownPrivilege()
 {
     HANDLE hToken;
